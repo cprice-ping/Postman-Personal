@@ -1,0 +1,773 @@
+{
+	"info": {
+		"_postman_id": "7bfa3617-8995-48d6-a695-0ef2fb0096d6",
+		"name": "PingFed Admin API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "New Install",
+			"item": [
+				{
+					"name": "Accept License Agreement",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d9401347-b30e-401f-9e8c-009aad5cadb4",
+								"exec": [
+									"pm.test(\"User License Accepted\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"licenseAgreementUrl\": \"https://{{pingfed}}:{{admin}}/pf-admin-api/license-agreement\",\n  \"accepted\": true\n}"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/license/agreement",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"license",
+								"agreement"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import PingFed license",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7a020832-65a8-4cfe-8250-a6bdb7d89e85",
+								"exec": [
+									"var removeIllegalCharacters = function(input) {",
+									"    return input",
+									"        .replace(/=/g, '')",
+									"        .replace(/\\+/g, '-')",
+									"        .replace(/\\//g, '_');",
+									"};",
+									"",
+									"// Base64 Encoding function",
+									"var base64object = function(input) {",
+									"    ",
+									"    console.log(input);",
+									"    var inputWords = CryptoJS.enc.Utf8.parse(input);",
+									"    var base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+									"    var output = removeIllegalCharacters(base64);",
+									"    return output;",
+									"};",
+									"",
+									"var licenseBase64 = base64object(pm.environment.get('license'));",
+									"",
+									"pm.environment.set('licenseBase64', licenseBase64);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "21d75491-242e-4d39-81b6-f4d76a790e21",
+								"exec": [
+									"pm.test(\"PF License Imported\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-XSRF-header",
+								"value": "PingFederate",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"fileData\": \"{{licenseBase64}}\" }"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/license",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"license"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Server Settings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "37cd23c7-5a5a-4834-bc81-9210b59a4074",
+								"exec": [
+									"pm.test(\"Server Settings Configured\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"contactInfo\": {\n    \"company\": \"PF Demo\"\n  },\n  \"rolesAndProtocols\": {\n    \"oauthRole\": {\n      \"enableOauth\": true,\n      \"enableOpenIdConnect\": true\n    },\n    \"idpRole\": {\n      \"enable\": true,\n      \"saml20Profile\": {\n        \"enable\": true,\n        \"enableAutoConnect\": false\n      },\n      \"enableOutboundProvisioning\": false,\n      \"enableSaml11\": false,\n      \"enableSaml10\": false,\n      \"enableWsFed\": true,\n      \"enableWsTrust\": true\n    },\n    \"spRole\": {\n      \"enable\": true,\n      \"saml20Profile\": {\n        \"enable\": true,\n        \"enableXASP\": false,\n        \"enableAutoConnect\": false\n      },\n      \"enableSaml11\": false,\n      \"enableSaml10\": false,\n      \"enableWsFed\": false,\n      \"enableWsTrust\": false,\n      \"enableOpenIDConnect\": true,\n      \"enableInboundProvisioning\": false\n    },\n    \"enableIdpDiscovery\": false\n  },\n  \"federationInfo\": {\n    \"baseUrl\": \"https://{{pingfed}}:{{runtime}}\",\n    \"saml2EntityId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"autoConnectEntityId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"saml1xIssuerId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"saml1xSourceId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"wsfedRealm\": \"https://{{pingfed}}:{{runtime}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/serverSettings",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"serverSettings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Initial Admin Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3e994466-94bd-421c-86c8-6b30e644aea8",
+								"exec": [
+									"pm.test(\"Admin Account Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"Administrator\",\n  \"password\": \"P@ssword99\",\n  \"active\": true,\n  \"description\": \"Initial Admin User\",\n  \"auditor\": false,\n  \"emailAddress\": \"pfadmin@bogus.com\",\n  \"roles\": [\n    \"USER_ADMINISTRATOR\",\n    \"ADMINISTRATOR\",\n    \"CRYPTO_ADMINISTRATOR\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/administrativeAccounts",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"administrativeAccounts"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Accept EULA\nInject PF License\nCreate Admin user\nConfigure Service Settings",
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "P@ssword99",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "Administrator",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1b67ee24-a065-4639-9118-39efb2f0c5e8",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a622864f-1f60-42e3-8cd0-90d0e1023971",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "IDP Config - DataStore \\ PCV \\ Adapter",
+			"item": [
+				{
+					"name": "Add Datastore - PD",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "18654f1f-702d-45d1-b2e2-4742a2253d2e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c855f38-dfee-4e47-b7d8-7e230cd38dd3",
+								"exec": [
+									"pm.test(\"PD Datastore Created\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\n      \"type\": \"LDAP\",\n      \"maskAttributeValues\": false,\n      \"hostnames\": [\n        \"{{pingdir}}\"\n      ],\n      \"ldapType\": \"PING_DIRECTORY\",\n      \"bindAnonymously\": false,\n      \"userDN\": \"cn=administrator\",\n\t  \"password\": \"2PingDirectory\",\n      \"useSsl\": false,\n      \"useDnsSrvRecords\": false,\n      \"name\": \"PingDirectory\",\n      \"testOnBorrow\": false,\n      \"testOnReturn\": false,\n      \"createIfNecessary\": true\n    }"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/dataStores",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"dataStores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Password Credential Validator (LDAP - PD)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "18654f1f-702d-45d1-b2e2-4742a2253d2e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3a8cf566-6b2a-4887-ac6f-f7e702cb3476",
+								"exec": [
+									"pm.test(\"LDAP PCV Created\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"PDPCV\",\n  \"name\": \"PD PCV\",\n  \"pluginDescriptorRef\": {\n    \"id\": \"org.sourceid.saml20.domain.LDAPUsernamePasswordCredentialValidator\"\n  },\n  \"configuration\": {\n    \"tables\": [\n      {\n        \"name\": \"Authentication Error Overrides\",\n        \"rows\": []\n      }\n    ],\n    \"fields\": [\n      {\n        \"name\": \"LDAP Datastore\",\n        \"value\": \"LDAP-0B747677F85D41C7D9C773685CCAF91E6F57E0C2\"\n      },\n      {\n        \"name\": \"Search Base\",\n        \"value\": \"dc=example,dc=com\"\n      },\n      {\n        \"name\": \"Search Filter\",\n        \"value\": \"(|(uid=${username})(mail=${username}))\"\n      },\n      {\n        \"name\": \"Scope of Search\",\n        \"value\": \"Subtree\"\n      },\n      {\n        \"name\": \"Case-Sensitive Matching\",\n        \"value\": \"true\"\n      },\n      {\n        \"name\": \"Display Name Attribute\",\n        \"value\": \"displayName\"\n      },\n      {\n        \"name\": \"Mail Attribute\",\n        \"value\": \"mail\"\n      },\n      {\n        \"name\": \"SMS Attribute\",\n        \"value\": \"\"\n      },\n      {\n        \"name\": \"PingID Username Attribute\",\n        \"value\": \"\"\n      },\n      {\n        \"name\": \"Mail Search Filter\",\n        \"value\": \"\"\n      },\n      {\n        \"name\": \"Username Attribute\",\n        \"value\": \"\"\n      },\n      {\n        \"name\": \"Mail Verified Attribute\",\n        \"value\": \"\"\n      }\n    ]\n  },\n  \"attributeContract\": {\n    \"coreAttributes\": [\n      {\n        \"name\": \"mail\"\n      },\n      {\n        \"name\": \"givenName\"\n      },\n      {\n        \"name\": \"DN\"\n      },\n      {\n        \"name\": \"username\"\n      }\n    ],\n    \"extendedAttributes\": [\n      {\n        \"name\": \"entryUUID\"\n      }\n    ]\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/passwordCredentialValidators",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"passwordCredentialValidators"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add HTML Form Adapter",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "18654f1f-702d-45d1-b2e2-4742a2253d2e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1e26e9c5-34dc-4319-94d4-f12ca92fd718",
+								"exec": [
+									"pm.test(\"HTML Form Adapter Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "       {\n            \"id\": \"HTMLForm\",\n            \"name\": \"HTML Form\",\n            \"pluginDescriptorRef\": {\n                \"id\": \"com.pingidentity.adapters.htmlform.idp.HtmlFormIdpAuthnAdapter\",\n                \"location\": \"https://{{pingfed}}:9999/pf-admin-api/v1/idp/adapters/descriptors/com.pingidentity.adapters.htmlform.idp.HtmlFormIdpAuthnAdapter\"\n            },\n            \"configuration\": {\n                \"tables\": [\n                    {\n                        \"name\": \"Credential Validators\",\n                        \"rows\": [\n                            {\n                                \"fields\": [\n                                    {\n                                        \"name\": \"Password Credential Validator Instance\",\n                                        \"value\": \"PDPCV\"\n                                    }\n                                ]\n                            }\n                        ]\n                    }\n                ],\n                \"fields\": [\n                    {\n                        \"name\": \"Challenge Retries\",\n                        \"value\": \"3\"\n                    },\n                    {\n                        \"name\": \"Session State\",\n                        \"value\": \"None\"\n                    },\n                    {\n                        \"name\": \"Session Timeout\",\n                        \"value\": \"60\"\n                    },\n                    {\n                        \"name\": \"Session Max Timeout\",\n                        \"value\": \"480\"\n                    },\n                    {\n                        \"name\": \"Allow Password Changes\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"Password Management System\",\n                        \"value\": \"\"\n                    },\n                    {\n                        \"name\": \"Enable 'Remember My Username'\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"Enable 'This is My Device'\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"Change Password Email Notification\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"Show Password Expiring Warning\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"Password Reset Type\",\n                        \"value\": \"NONE\"\n                    },\n                    {\n                        \"name\": \"Account Unlock\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"Local Identity Profile\",\n                        \"value\": \"\"\n                    },\n                    {\n                        \"name\": \"Enable Username Recovery\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"Login Template\",\n                        \"value\": \"html.form.login.template.html\"\n                    },\n                    {\n                        \"name\": \"Logout Path\",\n                        \"value\": \"\"\n                    },\n                    {\n                        \"name\": \"Logout Redirect\",\n                        \"value\": \"\"\n                    },\n                    {\n                        \"name\": \"Logout Template\",\n                        \"value\": \"idp.logout.success.page.template.html\"\n                    },\n                    {\n                        \"name\": \"Change Password Template\",\n                        \"value\": \"html.form.change.password.template.html\"\n                    },\n                    {\n                        \"name\": \"Change Password Message Template\",\n                        \"value\": \"html.form.message.template.html\"\n                    },\n                    {\n                        \"name\": \"Password Management System Message Template\",\n                        \"value\": \"html.form.message.template.html\"\n                    },\n                    {\n                        \"name\": \"Change Password Email Template\",\n                        \"value\": \"message-template-end-user-password-change.html\"\n                    },\n                    {\n                        \"name\": \"Expiring Password Warning Template\",\n                        \"value\": \"html.form.password.expiring.notification.template.html\"\n                    },\n                    {\n                        \"name\": \"Threshold for Expiring Password Warning\",\n                        \"value\": \"7\"\n                    },\n                    {\n                        \"name\": \"Snooze Interval for Expiring Password Warning\",\n                        \"value\": \"24\"\n                    },\n                    {\n                        \"name\": \"Login Challenge Template\",\n                        \"value\": \"html.form.login.challenge.template.html\"\n                    },\n                    {\n                        \"name\": \"'Remember My Username' Lifetime\",\n                        \"value\": \"30\"\n                    },\n                    {\n                        \"name\": \"'This is My Device' Lifetime\",\n                        \"value\": \"30\"\n                    },\n                    {\n                        \"name\": \"Allow Username Edits During Chaining\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"Track Authentication Time\",\n                        \"value\": \"true\"\n                    },\n                    {\n                        \"name\": \"Post-Password Change Re-Authentication Delay\",\n                        \"value\": \"0\"\n                    },\n                    {\n                        \"name\": \"Password Reset Username Template\",\n                        \"value\": \"forgot-password.html\"\n                    },\n                    {\n                        \"name\": \"Password Reset Code Template\",\n                        \"value\": \"forgot-password-resume.html\"\n                    },\n                    {\n                        \"name\": \"Password Reset Template\",\n                        \"value\": \"forgot-password-change.html\"\n                    },\n                    {\n                        \"name\": \"Password Reset Error Template\",\n                        \"value\": \"forgot-password-error.html\"\n                    },\n                    {\n                        \"name\": \"Password Reset Success Template\",\n                        \"value\": \"forgot-password-success.html\"\n                    },\n                    {\n                        \"name\": \"Account Unlock Template\",\n                        \"value\": \"account-unlock.html\"\n                    },\n                    {\n                        \"name\": \"OTP Length\",\n                        \"value\": \"8\"\n                    },\n                    {\n                        \"name\": \"OTP Time to Live\",\n                        \"value\": \"10\"\n                    },\n                    {\n                        \"name\": \"PingID Properties\",\n                        \"value\": \"\"\n                    },\n                    {\n                        \"name\": \"Require Verified Email\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"Username Recovery Template\",\n                        \"value\": \"username.recovery.template.html\"\n                    },\n                    {\n                        \"name\": \"Username Recovery Info Template\",\n                        \"value\": \"username.recovery.info.template.html\"\n                    },\n                    {\n                        \"name\": \"Username Recovery Email Template\",\n                        \"value\": \"message-template-username-recovery.html\"\n                    },\n                    {\n                        \"name\": \"CAPTCHA for Authentication\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"CAPTCHA for Password change\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"CAPTCHA for Password Reset\",\n                        \"value\": \"false\"\n                    },\n                    {\n                        \"name\": \"CAPTCHA for Username recovery\",\n                        \"value\": \"false\"\n                    }\n                ]\n            },\n            \"attributeContract\": {\n                \"coreAttributes\": [\n                    {\n                        \"name\": \"policy.action\",\n                        \"masked\": false,\n                        \"pseudonym\": false\n                    },\n                    {\n                        \"name\": \"username\",\n                        \"masked\": false,\n                        \"pseudonym\": true\n                    }\n                ],\n                \"extendedAttributes\": [\n                    {\n                        \"name\": \"entryUUID\",\n                        \"masked\": false,\n                        \"pseudonym\": false\n                    },\n                    {\n                        \"name\": \"mail\",\n                        \"masked\": false,\n                        \"pseudonym\": false\n                    }\n                ],\n                \"maskOgnlValues\": false\n            },\n            \"attributeMapping\": {\n                \"attributeSources\": [],\n                \"attributeContractFulfillment\": {\n                    \"entryUUID\": {\n                        \"source\": {\n                            \"type\": \"ADAPTER\"\n                        },\n                        \"value\": \"entryUUID\"\n                    },\n                    \"mail\": {\n                        \"source\": {\n                            \"type\": \"ADAPTER\"\n                        },\n                        \"value\": \"mail\"\n                    },\n                    \"policy.action\": {\n                        \"source\": {\n                            \"type\": \"ADAPTER\"\n                        },\n                        \"value\": \"policy.action\"\n                    },\n                    \"username\": {\n                        \"source\": {\n                            \"type\": \"ADAPTER\"\n                        },\n                        \"value\": \"username\"\n                    }\n                },\n                \"issuanceCriteria\": {\n                    \"conditionalCriteria\": []\n                }\n            }\n        }"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/idp/adapters",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"idp",
+								"adapters"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "603b6cc6-2419-4853-a9a2-bfe5d81e1d91",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "787babf8-a335-48f2-8221-7fe05e963476",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "IDP Config - AuthN Policy",
+			"item": [
+				{
+					"name": "Create AuthN Policy Contract",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "18654f1f-702d-45d1-b2e2-4742a2253d2e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4f14cf69-4857-4f29-b857-d41ad98f72a3",
+								"exec": [
+									"pm.test(\"Policy Contract Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    ",
+									"    var response = pm.response.json();",
+									"    pm.environment.set(\"policyContract\", response.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\n      \"name\": \"Default Policy Contract\",\n      \"coreAttributes\": [\n        {\n          \"name\": \"subject\"\n        }\n      ],\n      \"extendedAttributes\": [\n        {\n          \"name\": \"entryUUID\"\n        },\n        {\n          \"name\": \"mail\"\n        }\n      ]\n    }"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/authenticationPolicyContracts",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"authenticationPolicyContracts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Enable IdP AuthN Policies",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "18654f1f-702d-45d1-b2e2-4742a2253d2e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4f14cf69-4857-4f29-b857-d41ad98f72a3",
+								"exec": [
+									"pm.test(\"IdP AuthN Policies Enabled\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enableIdpAuthnSelection\": true,\n  \"enableSpAuthnSelection\": false\n}"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/authenticationPolicies/settings",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"authenticationPolicies",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Default AuthN Policy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "18654f1f-702d-45d1-b2e2-4742a2253d2e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4f14cf69-4857-4f29-b857-d41ad98f72a3",
+								"exec": [
+									"pm.test(\"Default AuthN Policy Created\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"failIfNoSelection\": false,\n  \"authnSelectionTrees\": [\n    {\n      \"rootNode\": {\n        \"action\": {\n          \"type\": \"AUTHN_SOURCE\",\n          \"authenticationSource\": {\n            \"type\": \"IDP_ADAPTER\",\n            \"sourceRef\": {\n              \"id\": \"HTMLForm\"\n            }\n          }\n        },\n        \"children\": [\n          {\n            \"action\": {\n              \"type\": \"DONE\",\n              \"context\": \"Fail\"\n            }\n          },\n          {\n            \"action\": {\n              \"type\": \"APC_MAPPING\",\n              \"context\": \"Success\",\n              \"authenticationPolicyContractRef\": {\n                \"id\": \"{{policyContract}}\"\n              },\n              \"attributeMapping\": {\n                \"attributeSources\": [],\n                \"attributeContractFulfillment\": {\n                  \"entryUUID\": {\n                    \"source\": {\n                      \"type\": \"ADAPTER\",\n                      \"id\": \"HTMLForm\"\n                    },\n                    \"value\": \"entryUUID\"\n                  },\n                  \"mail\": {\n                    \"source\": {\n                      \"type\": \"ADAPTER\",\n                      \"id\": \"HTMLForm\"\n                    },\n                    \"value\": \"mail\"\n                  },\n                  \"subject\": {\n                    \"source\": {\n                      \"type\": \"ADAPTER\",\n                      \"id\": \"HTMLForm\"\n                    },\n                    \"value\": \"username\"\n                  }\n                },\n                \"issuanceCriteria\": {\n                  \"conditionalCriteria\": []\n                }\n              }\n            }\n          }\n        ]\n      },\n      \"name\": \"Default AuthN Policy\",\n      \"enabled\": true\n    }\n  ],\n  \"defaultAuthenticationSources\": [],\n  \"trackedHttpParameters\": []\n}"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/authenticationPolicies/default",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"authenticationPolicies",
+								"default"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PingFed API Docs",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "P@ssword99",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "administrator",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-XSRF-Header",
+						"value": "PingFederate",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/api-docs/",
+					"protocol": "https",
+					"host": [
+						"{{pingfed}}"
+					],
+					"port": "{{admin}}",
+					"path": [
+						"pf-admin-api",
+						"api-docs",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "P@ssword99",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "Administrator",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "e2363da0-69cb-4aab-9eb0-8fcbf445be81",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "29568365-4865-498d-8d0b-3bfe35ddcafb",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
