@@ -1,0 +1,1153 @@
+{
+	"info": {
+		"_postman_id": "20d7cc84-5274-430a-a853-1c7c73731442",
+		"name": "Consent API",
+		"description": "This Collection is built to:\n\n* Demonstrate the Consent API in PingDirectory\n* Train PingIntelligence with appropriate calls\n* Attack PingIntelligence with inappropriate calls\n\nThe \"Training\" folder contains calls that show correct usage of the API\n\n*Notes*: \n\nConsent Definitions need to be created in PingDirectory Admin Console first\n\nSome calls contain hardcoded mapping of Definitions to Audience. If you want to use this against your own instance of Consent API, the array is held in Collection Variables\n\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Consent API (Mock Tokens)",
+			"item": [
+				{
+					"name": "Training",
+					"item": [
+						{
+							"name": "Unpriviledged User",
+							"item": [
+								{
+									"name": "Get Random User (Directory API)",
+									"item": [
+										{
+											"name": "Get a Random USER",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "28d92a72-d826-46b5-b084-dd359f3a5e7d",
+														"exec": [
+															"// Flush values from the last Run",
+															"pm.environment.unset(\"userId\");",
+															"pm.environment.unset(\"consentDefId\");",
+															"",
+															"pm.variables.set(\"userCount\", _.random(0,400000));"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"id": "5ba3cab7-cd06-4598-af10-8f75d2cb8bb8",
+														"exec": [
+															"var response = pm.response.json();",
+															"",
+															"if(response.size === 0){",
+															"    pm.setNextRequest(\"Get a Random User\");",
+															"}",
+															"",
+															"pm.test(\"User Located\", function () {",
+															"",
+															"    pm.expect(response._embedded.entries.entryUUID);",
+															"",
+															"    // Store the UserID for other calls",
+															"    pm.environment.set(\"userId\", response._embedded.entries[0].entryUUID);",
+															"    ",
+															"    console.log(response._embedded.entries[0].entryUUID);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "basic",
+													"basic": [
+														{
+															"key": "password",
+															"value": "12Ch@racters",
+															"type": "string"
+														},
+														{
+															"key": "username",
+															"value": "cn=dmanager",
+															"type": "string"
+														},
+														{
+															"key": "saveHelperData",
+															"value": true,
+															"type": "boolean"
+														},
+														{
+															"key": "showPassword",
+															"value": false,
+															"type": "boolean"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": ""
+												},
+												"url": {
+													"raw": "https://{{server}}/directory/v1/ou=people,dc=example,dc=com/subtree?searchScope=wholeSubtree&filter=objectClass eq \"inetOrgPerson\" and uid eq \"user.{{userCount}}\"&includeAttributes=entryUUID",
+													"protocol": "https",
+													"host": [
+														"{{server}}"
+													],
+													"path": [
+														"directory",
+														"v1",
+														"ou=people,dc=example,dc=com",
+														"subtree"
+													],
+													"query": [
+														{
+															"key": "searchScope",
+															"value": "wholeSubtree"
+														},
+														{
+															"key": "filter",
+															"value": "objectClass eq \"inetOrgPerson\" and uid eq \"user.{{userCount}}\""
+														},
+														{
+															"key": "includeAttributes",
+															"value": "entryUUID"
+														}
+													]
+												},
+												"description": "Used to select a Random User when using Mock Tokens"
+											},
+											"response": []
+										}
+									],
+									"description": "This call is used to select a random user for the Consent record",
+									"auth": {
+										"type": "basic",
+										"basic": [
+											{
+												"key": "password",
+												"value": "12Ch@racters",
+												"type": "string"
+											},
+											{
+												"key": "username",
+												"value": "cn=dmanager",
+												"type": "string"
+											},
+											{
+												"key": "saveHelperData",
+												"value": true,
+												"type": "boolean"
+											},
+											{
+												"key": "showPassword",
+												"value": false,
+												"type": "boolean"
+											}
+										]
+									},
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "b123bc7c-ddc9-4841-ba43-95df227f836d",
+												"type": "text/javascript",
+												"exec": [
+													""
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"id": "6578bf15-98d4-472d-b399-b4ad9c2033c3",
+												"type": "text/javascript",
+												"exec": [
+													""
+												]
+											}
+										}
+									],
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "Locate Random Consent Definition",
+									"item": [
+										{
+											"name": "Get CONSENT definitions and pick one at Random",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "3b924333-ffb5-4d9c-ad55-6215f5d17f78",
+														"exec": [
+															"pm.test(\"Definitions Retrieved\", function () {",
+															"    pm.response.to.have.status(200);",
+															"    ",
+															"    var response = pm.response.json();",
+															"    pm.environment.set(\"consentDefId\", response._embedded.definitions[_.random(0,Number(response.count)-1)].id);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": ""
+												},
+												"url": {
+													"raw": "https://{{server}}/consent/v1/definitions",
+													"protocol": "https",
+													"host": [
+														"{{server}}"
+													],
+													"path": [
+														"consent",
+														"v1",
+														"definitions"
+													]
+												}
+											},
+											"response": []
+										}
+									],
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "Get Consent Definition localization and CREATE Consent record",
+									"item": [
+										{
+											"name": "Get CONSENT definition localizations and pick one",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"id": "9ee3847a-8235-418e-81e3-be15e0984f83",
+														"exec": [
+															"pm.test(\"Definitions Retrieved\", function () {",
+															"    pm.response.to.have.status(200);",
+															"    ",
+															"    var response = pm.response.json();",
+															"    ",
+															"    // Grab the text values from one of the localizations - this is used in the CREATE Record call",
+															"    var count = _.random(0,Number(response.count)-1);",
+															"    ",
+															"    pm.environment.set(\"consentDataText\", response._embedded.localizations[count].dataText);",
+															"    pm.environment.set(\"consentPurposeText\", response._embedded.localizations[count].purposeText);",
+															"    pm.environment.set(\"consentLocale\", response._embedded.localizations[count].id);",
+															"    pm.environment.set(\"consentVersion\", response._embedded.localizations[count].version);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": ""
+												},
+												"url": {
+													"raw": "https://{{server}}/consent/v1/definitions/{{consentDefId}}/localizations",
+													"protocol": "https",
+													"host": [
+														"{{server}}"
+													],
+													"path": [
+														"consent",
+														"v1",
+														"definitions",
+														"{{consentDefId}}",
+														"localizations"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Create new CONSENT record",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "ac0b5389-5704-46de-8d7f-c4c2dd26a281",
+														"exec": [
+															"var consentStatus = [ \"accepted\", \"denied\" ];",
+															"",
+															"// Array of names that could be in the Audience field",
+															"// Represents different applications that are asking for Consent",
+															"var array = JSON.parse(pm.variables.get(\"appDefArray\"));",
+															"    ",
+															"// Match the Consent Definition to the right Application for the Audience",
+															"for(i = 0; i < array.length; i++) {",
+															"    if (array[i].def == pm.environment.get(\"consentDefId\")) {",
+															"        pm.variables.set(\"consentAudience\", array[i].aud);",
+															"    }",
+															"}",
+															"",
+															"pm.variables.set(\"consentStatus\", consentStatus[_.random(0,1)]);"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"id": "1fac00fa-cade-4cf0-92b3-656e356804ea",
+														"exec": [
+															"pm.test(\"Consent Record Created\", function () {",
+															"    pm.response.to.have.status(201);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"status\": \"{{consentStatus}}\",\n  \"subject\": \"{{userId}}\",\n  \"actor\": \"{{userId}}\",\n  \"audience\": \"{{consentAudience}}\",\n  \"definition\": {\n    \"id\": \"{{consentDefId}}\",\n    \"version\": \"{{consentVersion}}\",\n    \"locale\": \"{{consentLocale}}\"\n  },\n  \"dataText\": \"{{consentDataText}}\",\n  \"purposeText\": \"{{consentPurposeText}}\"\n}"
+												},
+												"url": {
+													"raw": "https://{{server}}/consent/v1/consents",
+													"protocol": "https",
+													"host": [
+														"{{server}}"
+													],
+													"path": [
+														"consent",
+														"v1",
+														"consents"
+													]
+												},
+												"description": "Creates the Consent record for this User.\n\nSubject & Actor are set to the current User in the Bearer token\n\nAud is mapped to a string that is associated with the Definition. This allows for calls to be made across audiences - *ALL* my Consents, vs Consents for just *this* application\n\nThis also allows for an Application to have multiple Consent Definitions associated with it"
+											},
+											"response": []
+										}
+									],
+									"_postman_isSubFolder": true
+								},
+								{
+									"name": "Manage MY Consent Records",
+									"item": [
+										{
+											"name": "Get MY Consent Records",
+											"item": [
+												{
+													"name": "Get all MY Consent Records",
+													"event": [
+														{
+															"listen": "prerequest",
+															"script": {
+																"id": "e2dcae78-ca14-4149-9a18-1b89f17d0a20",
+																"exec": [
+																	"// Array of names that could be in the Audience field",
+																	"// Represents different applications that are asking for Consent",
+																	"var array = JSON.parse(pm.variables.get(\"appDefArray\"));",
+																	"    ",
+																	"pm.variables.set(\"consentDefinition\", array[_.random(0,(array.length)-1)].def);"
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "test",
+															"script": {
+																"id": "713de0d0-0446-4840-a6e3-d6367c5ab86c",
+																"exec": [
+																	"pm.test(\"Consent Records Retrieved\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": ""
+														},
+														"url": {
+															"raw": "https://{{server}}/consent/v1/consents",
+															"protocol": "https",
+															"host": [
+																"{{server}}"
+															],
+															"path": [
+																"consent",
+																"v1",
+																"consents"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "Get All CONSENT Records by Audience",
+													"event": [
+														{
+															"listen": "prerequest",
+															"script": {
+																"id": "e2dcae78-ca14-4149-9a18-1b89f17d0a20",
+																"exec": [
+																	"// Array of names that could be in the Audience field",
+																	"// Represents different applications that are asking for Consent",
+																	"var array = JSON.parse(pm.variables.get(\"appDefArray\"));",
+																	"    ",
+																	"pm.variables.set(\"consentAudience\", array[_.random(0,(array.length)-1)].aud);"
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "test",
+															"script": {
+																"id": "1696e1a7-dc64-4ed3-9e10-fe14474c6818",
+																"exec": [
+																	"pm.test(\"Consent Records Retrieved\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": ""
+														},
+														"url": {
+															"raw": "https://{{server}}/consent/v1/consents?audience={{consentAudience}}",
+															"protocol": "https",
+															"host": [
+																"{{server}}"
+															],
+															"path": [
+																"consent",
+																"v1",
+																"consents"
+															],
+															"query": [
+																{
+																	"key": "audience",
+																	"value": "{{consentAudience}}"
+																}
+															]
+														},
+														"description": "Filters the Consent response to the Audience that it was Created for"
+													},
+													"response": []
+												},
+												{
+													"name": "Get All CONSENT Records by Definition",
+													"event": [
+														{
+															"listen": "prerequest",
+															"script": {
+																"id": "e2dcae78-ca14-4149-9a18-1b89f17d0a20",
+																"exec": [
+																	"// Array of names that could be in the Audience field",
+																	"// Represents different applications that are asking for Consent",
+																	"var array = JSON.parse(pm.variables.get(\"appDefArray\"));",
+																	"    ",
+																	"pm.variables.set(\"consentDefinition\", array[_.random(0,(array.length)-1)].def);"
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "test",
+															"script": {
+																"id": "d5e55d6c-44fa-40ca-9c62-dd3ac52a4c4e",
+																"exec": [
+																	"pm.test(\"Consent Records Retrieved\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": ""
+														},
+														"url": {
+															"raw": "https://{{server}}/consent/v1/consents?definition={{consentDefinition}}",
+															"protocol": "https",
+															"host": [
+																"{{server}}"
+															],
+															"path": [
+																"consent",
+																"v1",
+																"consents"
+															],
+															"query": [
+																{
+																	"key": "definition",
+																	"value": "{{consentDefinition}}"
+																}
+															]
+														},
+														"description": "Filters the Consent response to the Definition that it was used to create it\n\nThis allows for:\n\n* Multiple Consents within a single application\n* Single Definition used by multiple Apps"
+													},
+													"response": []
+												}
+											],
+											"_postman_isSubFolder": true
+										},
+										{
+											"name": "Modify Consent Record",
+											"item": [
+												{
+													"name": "Get CONSENT Records (current User) and pick one",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"id": "5b375b1e-fe40-45d7-9fc8-0d77c0dd7bf1",
+																"exec": [
+																	"pm.test(\"Consent Records Retrieved\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"    ",
+																	"    var response = pm.response.json();",
+																	"    pm.environment.set(\"consentRecordId\", response._embedded.consents[_.random(0,Number(response.count)-1)].id);",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": ""
+														},
+														"url": {
+															"raw": "https://{{server}}/consent/v1/consents",
+															"protocol": "https",
+															"host": [
+																"{{server}}"
+															],
+															"path": [
+																"consent",
+																"v1",
+																"consents"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "Get CONSENT specfic record",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"id": "b6d8a267-95ee-4553-99f0-63c61663f558",
+																"exec": [
+																	"pm.test(\"Consent Record Retrieved\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"    ",
+																	"    var response = pm.response.json();",
+																	"    ",
+																	"    // Prep environment to Revoke the Consent if already Accepted",
+																	"    // otherwise Accept this record",
+																	"    if(response.status == \"accepted\"){",
+																	"        pm.environment.set(\"consentStatus\", \"revoked\");",
+																	"    } else {",
+																	"        pm.environment.set(\"consentStatus\", \"accepted\");",
+																	"    }",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": ""
+														},
+														"url": {
+															"raw": "https://{{server}}/consent/v1/consents/{{consentRecordId}}",
+															"protocol": "https",
+															"host": [
+																"{{server}}"
+															],
+															"path": [
+																"consent",
+																"v1",
+																"consents",
+																"{{consentRecordId}}"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "Modify CONSENT specific record",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"id": "b6d8a267-95ee-4553-99f0-63c61663f558",
+																"exec": [
+																	"pm.test(\"Consent Record Modified\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "prerequest",
+															"script": {
+																"id": "bc70ece8-d72a-4af2-ab65-dce7120255ca",
+																"exec": [
+																	""
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "PATCH",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															},
+															{
+																"key": "Content-Type",
+																"name": "Content-Type",
+																"value": "application/json",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"status\": \"{{consentStatus}}\"\n}"
+														},
+														"url": {
+															"raw": "https://{{server}}/consent/v1/consents/{{consentRecordId}}",
+															"protocol": "https",
+															"host": [
+																"{{server}}"
+															],
+															"path": [
+																"consent",
+																"v1",
+																"consents",
+																"{{consentRecordId}}"
+															]
+														}
+													},
+													"response": []
+												}
+											],
+											"_postman_isSubFolder": true
+										}
+									],
+									"_postman_isSubFolder": true
+								}
+							],
+							"description": "These are the most common use cases - Unprivilidged Users have access to only their own Consent Records.\n\nThe ATV on the Consent API will match the incoming Bearer token to a User Object in the Directory. This User will be the one that owns the Records.\n\nUnprivilidged Access is denoted by the defined scope on the Consent API service. \n\nA Pre-Request script is used to create the proper Mock Bearer token.",
+							"auth": {
+								"type": "bearer",
+								"bearer": [
+									{
+										"key": "token",
+										"value": "{{access_token}}",
+										"type": "string"
+									}
+								]
+							},
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "1322ca72-79d3-4ab0-9560-44f468977797",
+										"type": "text/javascript",
+										"exec": [
+											"// Generate Random User-Agent for Request",
+											"var userAgentArray = [ ",
+											"    \"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.8) Gecko/20050513 Galeon/1.3.21\",",
+											"    \"Mozilla/5.0 (Windows; U; Windows NT 5.2; fr-FR; rv:1.7.8) Gecko/20050511 Firefox/1.0.4\",",
+											"    \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+											"    \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36\",",
+											"    \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+											"    \"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+											"    \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8\",",
+											"    \"Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:50.0) Gecko/20100101 Firefox/50.0\"",
+											"];",
+											"",
+											"var random = _.random(0, 7);",
+											"pm.variables.set(\"userAgent\", userAgentArray[random]);",
+											"",
+											"// Generate random IP Address - Request Header - X-Forwarded-For",
+											"pm.variables.set(\"clientIP\", _.random(1,254)+\".\"+_.random(1,254)+\".\"+_.random(1,254)+\".\"+_.random(1,254));",
+											"",
+											"// Generate New Mock Token",
+											"var currentTime = +new Date(); // the current time in milliseconds",
+											"var issuedAtTimeSeconds = currentTime/1000;",
+											"var expirationTimeSeconds = currentTime/1000 + 3600;",
+											"",
+											"var token = {",
+											"  \"iss\": \"postman pre-request\",",
+											"  \"aud\": \"PI - PD Consent API\",",
+											"  \"client_id\": \"PDConsentUnprivClient\",",
+											"  \"sub\": pm.environment.get(\"userId\"),",
+											"  \"active\": true,",
+											"  \"scope\": \"pd:consent:unpriv\",",
+											"  \"exp\" : Math.ceil(expirationTimeSeconds),",
+											"  \"iat\" : Math.ceil(issuedAtTimeSeconds)",
+											"};",
+											"",
+											"pm.environment.set(\"access_token\", JSON.stringify(token));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "49f6bc3d-c53c-4078-85a1-04fea2bc162e",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Priviledged User (In Progress)",
+							"item": [
+								{
+									"name": "Get Any Consent Records",
+									"item": [
+										{
+											"name": "Get all All Consent Records",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "e2dcae78-ca14-4149-9a18-1b89f17d0a20",
+														"exec": [
+															"// Array of names that could be in the Audience field",
+															"// Represents different applications that are asking for Consent",
+															"var array = JSON.parse(pm.variables.get(\"appDefArray\"));",
+															"    ",
+															"pm.variables.set(\"consentDefinition\", array[_.random(0,(array.length)-1)].def);"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"id": "713de0d0-0446-4840-a6e3-d6367c5ab86c",
+														"exec": [
+															"pm.test(\"Consent Records Retrieved\", function () {",
+															"    pm.response.to.have.status(200);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": ""
+												},
+												"url": {
+													"raw": "https://{{server}}/consent/v1/consents",
+													"protocol": "https",
+													"host": [
+														"{{server}}"
+													],
+													"path": [
+														"consent",
+														"v1",
+														"consents"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Get All CONSENT Records by Audience",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "e2dcae78-ca14-4149-9a18-1b89f17d0a20",
+														"exec": [
+															"// Array of names that could be in the Audience field",
+															"// Represents different applications that are asking for Consent",
+															"var array = JSON.parse(pm.variables.get(\"appDefArray\"));",
+															"    ",
+															"pm.variables.set(\"consentAudience\", array[_.random(0,(array.length)-1)].aud);"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"id": "1696e1a7-dc64-4ed3-9e10-fe14474c6818",
+														"exec": [
+															"pm.test(\"Consent Records Retrieved\", function () {",
+															"    pm.response.to.have.status(200);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": ""
+												},
+												"url": {
+													"raw": "https://{{server}}/consent/v1/consents?audience={{consentAudience}}",
+													"protocol": "https",
+													"host": [
+														"{{server}}"
+													],
+													"path": [
+														"consent",
+														"v1",
+														"consents"
+													],
+													"query": [
+														{
+															"key": "audience",
+															"value": "{{consentAudience}}"
+														}
+													]
+												},
+												"description": "Filters the Consent response to the Audience that it was Created for"
+											},
+											"response": []
+										},
+										{
+											"name": "Get All CONSENT Records by Definition",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "e2dcae78-ca14-4149-9a18-1b89f17d0a20",
+														"exec": [
+															"// Array of names that could be in the Audience field",
+															"// Represents different applications that are asking for Consent",
+															"var array = JSON.parse(pm.variables.get(\"appDefArray\"));",
+															"    ",
+															"pm.variables.set(\"consentDefinition\", array[_.random(0,(array.length)-1)].def);"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"id": "d5e55d6c-44fa-40ca-9c62-dd3ac52a4c4e",
+														"exec": [
+															"pm.test(\"Consent Records Retrieved\", function () {",
+															"    pm.response.to.have.status(200);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": ""
+												},
+												"url": {
+													"raw": "https://{{server}}/consent/v1/consents?definition={{consentDefinition}}",
+													"protocol": "https",
+													"host": [
+														"{{server}}"
+													],
+													"path": [
+														"consent",
+														"v1",
+														"consents"
+													],
+													"query": [
+														{
+															"key": "definition",
+															"value": "{{consentDefinition}}"
+														}
+													]
+												},
+												"description": "Filters the Consent response to the Definition that it was used to create it\n\nThis allows for:\n\n* Multiple Consents within a single application\n* Single Definition used by multiple Apps"
+											},
+											"response": []
+										}
+									],
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "be4dbf23-2179-48fa-9ba8-2d4880095385",
+												"type": "text/javascript",
+												"exec": [
+													""
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"id": "16d1024c-ee94-47bb-b3b4-fcd14ff41b49",
+												"type": "text/javascript",
+												"exec": [
+													""
+												]
+											}
+										}
+									],
+									"_postman_isSubFolder": true
+								}
+							],
+							"description": "These are less common use cases - Priviledged Users have access to any Consent Records.\n\nPriviledged Access is denoted by the defined scope on the Consent API service. \n\nA Pre-Request script is used to create the proper Mock Bearer token.\n\nThe API requires that a \"sub\" claim is included, and that it maps to a User Object. For these calls, a random User has been selected and hardcoded into the Bearer token",
+							"auth": {
+								"type": "bearer",
+								"bearer": [
+									{
+										"key": "token",
+										"value": "{{access_token}}",
+										"type": "string"
+									}
+								]
+							},
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "809adcd7-d27a-407e-bbdb-00cccf0da242",
+										"type": "text/javascript",
+										"exec": [
+											"// Generate Random User-Agent for Request",
+											"var userAgentArray = [ ",
+											"    \"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.8) Gecko/20050513 Galeon/1.3.21\",",
+											"    \"Mozilla/5.0 (Windows; U; Windows NT 5.2; fr-FR; rv:1.7.8) Gecko/20050511 Firefox/1.0.4\",",
+											"    \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+											"    \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36\",",
+											"    \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+											"    \"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+											"    \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8\",",
+											"    \"Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:50.0) Gecko/20100101 Firefox/50.0\"",
+											"];",
+											"",
+											"var random = _.random(0, 7);",
+											"pm.variables.set(\"userAgent\", userAgentArray[random]);",
+											"",
+											"// Generate random IP Address - Request Header - X-Forwarded-For",
+											"pm.variables.set(\"clientIP\", _.random(1,254)+\".\"+_.random(1,254)+\".\"+_.random(1,254)+\".\"+_.random(1,254));",
+											"",
+											"// Generate New Mock Token",
+											"var currentTime = +new Date(); // the current time in milliseconds",
+											"var issuedAtTimeSeconds = currentTime/1000;",
+											"var expirationTimeSeconds = currentTime/1000 + 3600;",
+											"",
+											"var token = {",
+											"  \"iss\": \"postman pre-request\",",
+											"  \"aud\": \"PI - PD Consent API\",",
+											"  \"client_id\": \"PDConsentPrivClient\",",
+											"  \"sub\": \"2262ca5b-a0cb-31d7-96e0-78d1a068d3a0\",",
+											"  \"active\": true,",
+											"  \"scope\": \"pd:consent:priv\",",
+											"  \"exp\" : Math.ceil(expirationTimeSeconds),",
+											"  \"iat\" : Math.ceil(issuedAtTimeSeconds)",
+											"};",
+											"",
+											"pm.environment.set(\"access_token\", JSON.stringify(token));"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "caf3444d-8fd2-4277-b727-8049f71d9a86",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"_postman_isSubFolder": true
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"description": "Calls in this folder use a Bearer token that is validated against the Mock ATV in the Consent API. This relieves the need for a full OAuth AS request first. The Mock ATV is configured to accept entryUUID (on the Exact Match object) in the \"sub\" claim and maps that to the proper userDN in the Directory.\n\nA pre-request script on the *Training --> [Unpriviledged | Priviledged] User* folder is used to generate the Mock Tokens (due to a Scope requirement for each User type). Each token will be unique for every Iteration - this is to prevent PingIntelligence from determining this is a stolen token.\n",
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "dfe8a90c-f156-470f-afd8-60432ae62786",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b137710f-61f1-4568-894e-cd9ef5e59154",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "9e106abc-9ee3-4e52-b347-702f3a545432",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "2d359adb-3e20-4de6-a42a-7d1db3672613",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "21a83764-de20-4831-b528-e3a34dfba5bc",
+			"key": "server",
+			"value": "int-pd-generic.cpricedomain.ping-eng.com:8443",
+			"type": "string"
+		},
+		{
+			"id": "bfc95cd9-ebcd-4982-bb1f-16ebd6e3b2ef",
+			"key": "appDefArray",
+			"value": "[ \n    {\"def\": \"App1-TermsAndConditions\", \"aud\": \"Postman-Demo\"},\n    {\"def\": \"FHIR - Read Patient Record\", \"aud\": \"DG-FHIR-Demo\"},\n    {\"def\": \"PingAccess-Portal-Terms\", \"aud\": \"PA Demo\"}\n    ]",
+			"type": "string"
+		}
+	]
+}
