@@ -1,0 +1,749 @@
+{
+	"info": {
+		"_postman_id": "6c14901f-eadf-4b9d-9d61-be186026486e",
+		"name": "SalesU - Feb 2019 - Postman Tricks",
+		"description": "This collection shows some calls to P14C - used in the SalesU 2019 class\n\nRequirements:\nP14C Account\nP14C Environment\nP14C Connection -- Non-Interactive\n\nMy Demo Client:\n40a431d0-3df1-4bcc-b2f5-ad7b92022de4\nNSro9oZtQPdxwVj8Q~nGNoA14Pe5vWzQPtI1kSx9h2~o.Y3Vlcuu-gAl4tAXpPlr\n\nhttps://auth.pingone.com/15e057d1-86a5-494b-8f1a-0f8bd9b2b88e/as/.well-known/openid-configuration\nhttps://auth.pingone.com/15e057d1-86a5-494b-8f1a-0f8bd9b2b88e/as/token",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Lab 1 - Static Values",
+			"item": [
+				{
+					"name": "Get P14C OIDC Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://auth.pingone.com/15e057d1-86a5-494b-8f1a-0f8bd9b2b88e/as/.well-known/openid-configuration",
+							"protocol": "https",
+							"host": [
+								"auth",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"15e057d1-86a5-494b-8f1a-0f8bd9b2b88e",
+								"as",
+								".well-known",
+								"openid-configuration"
+							]
+						},
+						"description": "Get OIDC Metadata from .wellknown endpoint\n\nP14C shows this in the Application Config tab"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Access_Token (Client_Credential)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "NSro9oZtQPdxwVj8Q~nGNoA14Pe5vWzQPtI1kSx9h2~o.Y3Vlcuu-gAl4tAXpPlr",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "40a431d0-3df1-4bcc-b2f5-ad7b92022de4",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "scope",
+									"value": "p1:update:self:user p1:read:env:userPassword p1:read:env:grant p1:read:env:passwordPolicy p1:create:env:device p1:update:env:device p1:read:env:signOnPolicy p1:delete:env:population p1:update:self:device p1:update:env:userMfaEnabled p1:set:env:userPassword p1:update:env:branding p1:validate:env:userPassword p1:create:env:population p1:delete:env:user p1:create:env:image p1:update:env:user p1:import:env:user p1:read:env:device p1:validate:self:userPassword p1:reset:self:userPassword p1:delete:env:image p1:read:self:userPassword p1:read:env:activity p1:delete:env:branding p1:read:env:application p1:read:org:organization p1:update:env:signOnPolicy p1:update:env:population p1:delete:env:device p1:read:env:image p1:update:env:passwordPolicy p1:read:env:scope p1:delete:self:device p1:read:self:device p1:create:env:user p1:read:self:user p1:read:env:user p1:reset:env:userPassword p1:read:env:environment p1:read:env:resource p1:create:self:device p1:read:env:population p1:update:self:userMfaEnabled",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://auth.pingone.com/15e057d1-86a5-494b-8f1a-0f8bd9b2b88e/as/token?grant_type=client_credentials",
+							"protocol": "https",
+							"host": [
+								"auth",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"15e057d1-86a5-494b-8f1a-0f8bd9b2b88e",
+								"as",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials"
+								},
+								{
+									"key": "scope",
+									"value": "p1:update:self:user p1:read:env:userPassword p1:read:env:grant p1:read:env:passwordPolicy p1:create:env:device p1:update:env:device p1:read:env:signOnPolicy p1:delete:env:population p1:update:self:device p1:update:env:userMfaEnabled p1:set:env:userPassword p1:update:env:branding p1:validate:env:userPassword p1:create:env:population p1:delete:env:user p1:create:env:image p1:update:env:user p1:import:env:user p1:read:env:device p1:validate:self:userPassword p1:reset:self:userPassword p1:delete:env:image p1:read:self:userPassword p1:read:env:activity p1:delete:env:branding p1:read:env:application p1:read:org:organization p1:update:env:signOnPolicy p1:update:env:population p1:delete:env:device p1:read:env:image p1:update:env:passwordPolicy p1:read:env:scope p1:delete:self:device p1:read:self:device p1:create:env:user p1:read:self:user p1:read:env:user p1:reset:env:userPassword p1:read:env:environment p1:read:env:resource p1:create:self:device p1:read:env:population p1:update:self:userMfaEnabled",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Populations",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJraWQiOiJkZWZhdWx0IiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJodHRwczpcL1wvYXBpLnBpbmdvbmUuY29tIiwib3JnIjoiN2U5ZjgzOGUtMTNkMS00NWRlLTkzNzUtYzRlZWJiNjJjMDhmIiwic2NvcGUiOiJwMTpyZXNldDplbnY6dXNlclBhc3N3b3JkIHAxOnJlYWQ6ZW52OmltYWdlIHAxOmRlbGV0ZTplbnY6YnJhbmRpbmcgcDE6ZGVsZXRlOmVudjpwb3B1bGF0aW9uIHAxOmNyZWF0ZTplbnY6dXNlciBwMTpyZWFkOmVudjpkZXZpY2UgcDE6cmVhZDplbnY6dXNlclBhc3N3b3JkIHAxOnVwZGF0ZTplbnY6c2lnbk9uUG9saWN5IHAxOnJlYWQ6ZW52OnNpZ25PblBvbGljeSBwMTpyZWFkOmVudjpncmFudCBwMTp1cGRhdGU6ZW52OnVzZXJNZmFFbmFibGVkIHAxOmNyZWF0ZTplbnY6aW1hZ2UgcDE6cmVhZDplbnY6dXNlciBwMTp1cGRhdGU6ZW52OnVzZXIgcDE6cmVhZDplbnY6YWN0aXZpdHkgcDE6ZGVsZXRlOmVudjpkZXZpY2UgcDE6dXBkYXRlOmVudjpicmFuZGluZyBwMTpzZXQ6ZW52OnVzZXJQYXNzd29yZCBwMTpyZWFkOmVudjpwYXNzd29yZFBvbGljeSBwMTp1cGRhdGU6ZW52OnBhc3N3b3JkUG9saWN5IHAxOmltcG9ydDplbnY6dXNlciBwMTpyZWFkOmVudjpyZXNvdXJjZSBwMTpyZWFkOm9yZzpvcmdhbml6YXRpb24gcDE6cmVhZDplbnY6YXBwbGljYXRpb24gcDE6ZGVsZXRlOmVudjppbWFnZSBwMTp1cGRhdGU6ZW52OmRldmljZSBwMTp1cGRhdGU6ZW52OnBvcHVsYXRpb24gcDE6Y3JlYXRlOmVudjpwb3B1bGF0aW9uIHAxOnJlYWQ6ZW52OnNjb3BlIHAxOnJlYWQ6ZW52OnBvcHVsYXRpb24gcDE6Y3JlYXRlOmVudjpkZXZpY2UgcDE6cmVhZDplbnY6ZW52aXJvbm1lbnQgcDE6dmFsaWRhdGU6ZW52OnVzZXJQYXNzd29yZCBwMTpkZWxldGU6ZW52OnVzZXIiLCJpc3MiOiJodHRwczpcL1wvYXV0aC5waW5nb25lLmNvbVwvMTVlMDU3ZDEtODZhNS00OTRiLThmMWEtMGY4YmQ5YjJiODhlXC9hcyIsImV4cCI6MTU0NDk4NzI5OCwiZW52IjoiMTVlMDU3ZDEtODZhNS00OTRiLThmMWEtMGY4YmQ5YjJiODhlIiwiaWF0IjoxNTQ0OTgzNjk4LCJjbGllbnRfaWQiOiI0MGE0MzFkMC0zZGYxLTRiY2MtYjJmNS1hZDdiOTIwMjJkZTQifQ.HpQVHFtou9Vx83HB0rA2dUuGblxIj6Qh56wty2AeJf2YsHJv8SK3eOwcLVnt8ojM1ZiFusyTSUf6tPuvWsz_xkeDuKtx8mqE0MOjr6tGqbpOstXC3_dERoFD86TJcYabmBkhF5CW3xXQi6PEZNtkQRexg8cq8yQmEThXRtW97UpMJ2cmQ79eRpc2GADnlVcoMucMncAaePC0_jh0OKB5c5ndMa00f8wIWhyOOUYVI-6XbSxF87WFI1ZOXxw5S0GyFQsGXnoc5UL0qFivvzg8UkayiwgWWyff43V1dhJxa0So9-fj0riiII6JPT7FC8pcWXL0xndp0ROsgSZ86T7hZQ"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "https://api.pingone.com/v1/environments/15e057d1-86a5-494b-8f1a-0f8bd9b2b88e/populations",
+							"protocol": "https",
+							"host": [
+								"api",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"v1",
+								"environments",
+								"15e057d1-86a5-494b-8f1a-0f8bd9b2b88e",
+								"populations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJraWQiOiJkZWZhdWx0IiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJodHRwczpcL1wvYXBpLnBpbmdvbmUuY29tIiwib3JnIjoiN2U5ZjgzOGUtMTNkMS00NWRlLTkzNzUtYzRlZWJiNjJjMDhmIiwic2NvcGUiOiJwMTpyZXNldDplbnY6dXNlclBhc3N3b3JkIHAxOnJlYWQ6ZW52OmltYWdlIHAxOmRlbGV0ZTplbnY6YnJhbmRpbmcgcDE6ZGVsZXRlOmVudjpwb3B1bGF0aW9uIHAxOmNyZWF0ZTplbnY6dXNlciBwMTpyZWFkOmVudjpkZXZpY2UgcDE6cmVhZDplbnY6dXNlclBhc3N3b3JkIHAxOnVwZGF0ZTplbnY6c2lnbk9uUG9saWN5IHAxOnJlYWQ6ZW52OnNpZ25PblBvbGljeSBwMTpyZWFkOmVudjpncmFudCBwMTp1cGRhdGU6ZW52OnVzZXJNZmFFbmFibGVkIHAxOmNyZWF0ZTplbnY6aW1hZ2UgcDE6cmVhZDplbnY6dXNlciBwMTp1cGRhdGU6ZW52OnVzZXIgcDE6cmVhZDplbnY6YWN0aXZpdHkgcDE6ZGVsZXRlOmVudjpkZXZpY2UgcDE6dXBkYXRlOmVudjpicmFuZGluZyBwMTpzZXQ6ZW52OnVzZXJQYXNzd29yZCBwMTpyZWFkOmVudjpwYXNzd29yZFBvbGljeSBwMTp1cGRhdGU6ZW52OnBhc3N3b3JkUG9saWN5IHAxOmltcG9ydDplbnY6dXNlciBwMTpyZWFkOmVudjpyZXNvdXJjZSBwMTpyZWFkOm9yZzpvcmdhbml6YXRpb24gcDE6cmVhZDplbnY6YXBwbGljYXRpb24gcDE6ZGVsZXRlOmVudjppbWFnZSBwMTp1cGRhdGU6ZW52OmRldmljZSBwMTp1cGRhdGU6ZW52OnBvcHVsYXRpb24gcDE6Y3JlYXRlOmVudjpwb3B1bGF0aW9uIHAxOnJlYWQ6ZW52OnNjb3BlIHAxOnJlYWQ6ZW52OnBvcHVsYXRpb24gcDE6Y3JlYXRlOmVudjpkZXZpY2UgcDE6cmVhZDplbnY6ZW52aXJvbm1lbnQgcDE6dmFsaWRhdGU6ZW52OnVzZXJQYXNzd29yZCBwMTpkZWxldGU6ZW52OnVzZXIiLCJpc3MiOiJodHRwczpcL1wvYXV0aC5waW5nb25lLmNvbVwvMTVlMDU3ZDEtODZhNS00OTRiLThmMWEtMGY4YmQ5YjJiODhlXC9hcyIsImV4cCI6MTU0NDk4Nzg1NSwiZW52IjoiMTVlMDU3ZDEtODZhNS00OTRiLThmMWEtMGY4YmQ5YjJiODhlIiwiaWF0IjoxNTQ0OTg0MjU1LCJjbGllbnRfaWQiOiI0MGE0MzFkMC0zZGYxLTRiY2MtYjJmNS1hZDdiOTIwMjJkZTQifQ.AH6Gcmi2LBrKNYDhGdKBTeGxOFnrVssldJt5Mm0J1UdxPOKHPYOLE6BFrN6zVjk0-apu9UIBy8dMtxMpgbaGiWSlQg_d-gmopi_OTdjksIfF9dD9k-rPr1cW5uWyIf86ni2iyFuZ0I4qGj_xczjgTa5Rckz-cqk6_76Ar1VGxLm0WIxomZNqNGHNLzOGcS9wMAX2_rOl_t6qWvGHF89eXJhQGKDdtgy4S9H-NhZkq003VR2ZK0Smmr9vpGyth8M2MmQO0wws2Ig7WNFEJbu-eK2pRupwBb9VbJKffwKnN-GVyf30c4irgXWFyXcMF5DPgIuEJTYmDiAyiNpKS6YpkA"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"salesu2019user9999\",\n  \"email\": \"salesu2019user9999@company.com\",\n  \"population\" : {\n    \"id\" : \"9948ff54-184f-4652-9200-020642f3c7ec\"\n    }\n}"
+						},
+						"url": {
+							"raw": "https://api.pingone.com/v1/environments/15e057d1-86a5-494b-8f1a-0f8bd9b2b88e/users",
+							"protocol": "https",
+							"host": [
+								"api",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"v1",
+								"environments",
+								"15e057d1-86a5-494b-8f1a-0f8bd9b2b88e",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Lab 2 - Variables",
+			"item": [
+				{
+					"name": "Get P14C OIDC Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://auth.pingone.com/{{envId}}/as/.well-known/openid-configuration",
+							"protocol": "https",
+							"host": [
+								"auth",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"{{envId}}",
+								"as",
+								".well-known",
+								"openid-configuration"
+							]
+						},
+						"description": "Get OIDC Metadata from .wellknown endpoint\n\nP14C shows this in the Application Config tab"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Access_Token (Client_Credential)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7929a832-3c99-4033-a16a-88fbad048827",
+								"exec": [
+									"var response = pm.response.json();",
+									"",
+									"pm.environment.set(\"accessToken\", response.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "scope",
+									"value": "p1:update:self:user p1:read:env:userPassword p1:read:env:grant p1:read:env:passwordPolicy p1:create:env:device p1:update:env:device p1:read:env:signOnPolicy p1:delete:env:population p1:update:self:device p1:update:env:userMfaEnabled p1:set:env:userPassword p1:update:env:branding p1:validate:env:userPassword p1:create:env:population p1:delete:env:user p1:create:env:image p1:update:env:user p1:import:env:user p1:read:env:device p1:validate:self:userPassword p1:reset:self:userPassword p1:delete:env:image p1:read:self:userPassword p1:read:env:activity p1:delete:env:branding p1:read:env:application p1:read:org:organization p1:update:env:signOnPolicy p1:update:env:population p1:delete:env:device p1:read:env:image p1:update:env:passwordPolicy p1:read:env:scope p1:delete:self:device p1:read:self:device p1:create:env:user p1:read:self:user p1:read:env:user p1:reset:env:userPassword p1:read:env:environment p1:read:env:resource p1:create:self:device p1:read:env:population p1:update:self:userMfaEnabled",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://auth.pingone.com/{{envId}}/as/token?grant_type=client_credentials",
+							"protocol": "https",
+							"host": [
+								"auth",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"{{envId}}",
+								"as",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials"
+								},
+								{
+									"key": "scope",
+									"value": "p1:update:self:user p1:read:env:userPassword p1:read:env:grant p1:read:env:passwordPolicy p1:create:env:device p1:update:env:device p1:read:env:signOnPolicy p1:delete:env:population p1:update:self:device p1:update:env:userMfaEnabled p1:set:env:userPassword p1:update:env:branding p1:validate:env:userPassword p1:create:env:population p1:delete:env:user p1:create:env:image p1:update:env:user p1:import:env:user p1:read:env:device p1:validate:self:userPassword p1:reset:self:userPassword p1:delete:env:image p1:read:self:userPassword p1:read:env:activity p1:delete:env:branding p1:read:env:application p1:read:org:organization p1:update:env:signOnPolicy p1:update:env:population p1:delete:env:device p1:read:env:image p1:update:env:passwordPolicy p1:read:env:scope p1:delete:self:device p1:read:self:device p1:create:env:user p1:read:self:user p1:read:env:user p1:reset:env:userPassword p1:read:env:environment p1:read:env:resource p1:create:self:device p1:read:env:population p1:update:self:userMfaEnabled",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Populations",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "https://api.pingone.com/v1/environments/{{envId}}/populations",
+							"protocol": "https",
+							"host": [
+								"api",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"v1",
+								"environments",
+								"{{envId}}",
+								"populations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"salesu2019user9999\",\n  \"email\": \"salesu2019user9999@company.com\",\n  \"population\" : {\n    \"id\" : \"{{popId}}\"\n    }\n}"
+						},
+						"url": {
+							"raw": "https://api.pingone.com/v1/environments/{{envId}}/users",
+							"protocol": "https",
+							"host": [
+								"api",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"v1",
+								"environments",
+								"{{envId}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b929f942-d9c5-48ba-af7b-3873ab481d6e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6c40c62c-4654-465a-bd58-599d0ed64fb6",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Lab 3 - Collection Runner",
+			"item": [
+				{
+					"name": "Get Access_Token (Client_Credential)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7929a832-3c99-4033-a16a-88fbad048827",
+								"exec": [
+									"pm.test(\"Received New Token\", function () {",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    var response = pm.response.json();",
+									"",
+									"    // Store access_token in Environment",
+									"    pm.environment.set(\"accessToken\", response.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "scope",
+									"value": "p1:update:self:user p1:read:env:userPassword p1:read:env:grant p1:read:env:passwordPolicy p1:create:env:device p1:update:env:device p1:read:env:signOnPolicy p1:delete:env:population p1:update:self:device p1:update:env:userMfaEnabled p1:set:env:userPassword p1:update:env:branding p1:validate:env:userPassword p1:create:env:population p1:delete:env:user p1:create:env:image p1:update:env:user p1:import:env:user p1:read:env:device p1:validate:self:userPassword p1:reset:self:userPassword p1:delete:env:image p1:read:self:userPassword p1:read:env:activity p1:delete:env:branding p1:read:env:application p1:read:org:organization p1:update:env:signOnPolicy p1:update:env:population p1:delete:env:device p1:read:env:image p1:update:env:passwordPolicy p1:read:env:scope p1:delete:self:device p1:read:self:device p1:create:env:user p1:read:self:user p1:read:env:user p1:reset:env:userPassword p1:read:env:environment p1:read:env:resource p1:create:self:device p1:read:env:population p1:update:self:userMfaEnabled",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://auth.pingone.com/{{envId}}/as/token?grant_type=client_credentials",
+							"protocol": "https",
+							"host": [
+								"auth",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"{{envId}}",
+								"as",
+								"token"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Populations and pick one",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2a36d597-e86a-4f90-86cc-ce80fd7c9d96",
+								"exec": [
+									"console.log(pm.request);",
+									"",
+									"pm.test(\"Population Selected\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"    var response = pm.response.json();",
+									"",
+									"    // console.log(response);",
+									"    // console.log(response._embedded.populations);",
+									"    // console.log(_.random(0,Number(response.count)-1));",
+									"    // console.log(response._embedded.populations[_.random(0,Number(response.count)-1)].id);",
+									"    ",
+									"    // Pick a Population from the result at random and store it in the Environment",
+									"    pm.environment.set(\"popId\", response._embedded.populations[_.random(0,Number(response.count)-1)].id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "https://api.pingone.com/v1/environments/{{envId}}/populations",
+							"protocol": "https",
+							"host": [
+								"api",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"v1",
+								"environments",
+								"{{envId}}",
+								"populations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Random User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "888146cc-dcec-49db-8777-b6f4be8c7a84",
+								"exec": [
+									"pm.variables.set(\"count\", _.random(10000,50000));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "25432af6-837a-4dfe-8c32-c833b0a7426f",
+								"exec": [
+									"console.log(pm.request);",
+									"",
+									"pm.test(\"User Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"salesu2019user{{count}}\",\n  \"email\": \"salesu2019user{{count}}@company.com\",\n  \"population\" : {\n    \"id\" : \"{{popId}}\"\n    }\n}"
+						},
+						"url": {
+							"raw": "https://api.pingone.com/v1/environments/{{envId}}/users",
+							"protocol": "https",
+							"host": [
+								"api",
+								"pingone",
+								"com"
+							],
+							"path": [
+								"v1",
+								"environments",
+								"{{envId}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{accessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "624d3e19-6590-45e1-8bfe-49337a264a77",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "957cabc3-bdf7-4c3b-8a6c-1266f5b2fc38",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Lab 3 - Get All Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3cefe682-89f5-411b-a85a-6f12f6922526",
+						"exec": [
+							"pm.test(\"Users Retrieved\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    ",
+							"    var response = pm.response.json();",
+							"",
+							"    // Display the User Count in the Console",
+							"    console.log(response.size);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"salesu2019user9999\",\n  \"email\": \"salesu2019user9999@company.com\",\n  \"population\" : {\n    \"id\" : \"{{popId}}\"\n    }\n}"
+				},
+				"url": {
+					"raw": "https://api.pingone.com/v1/environments/{{envId}}/users/",
+					"protocol": "https",
+					"host": [
+						"api",
+						"pingone",
+						"com"
+					],
+					"path": [
+						"v1",
+						"environments",
+						"{{envId}}",
+						"users",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f151b838-0edf-489b-ae3a-232a452f54b7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "93f0ce6b-5fc8-421b-8717-594d180955c1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "ca366e46-f680-4a59-ae26-011dd69c5b29",
+			"key": "envId",
+			"value": "15e057d1-86a5-494b-8f1a-0f8bd9b2b88e",
+			"type": "string"
+		},
+		{
+			"id": "14eb1dc8-7120-4e4a-bb18-27616cdcdb78",
+			"key": "client_id",
+			"value": "40a431d0-3df1-4bcc-b2f5-ad7b92022de4",
+			"type": "string"
+		},
+		{
+			"id": "6d52eb22-645e-4d2b-8d94-6ab770677839",
+			"key": "client_secret",
+			"value": "NSro9oZtQPdxwVj8Q~nGNoA14Pe5vWzQPtI1kSx9h2~o.Y3Vlcuu-gAl4tAXpPlr",
+			"type": "string"
+		}
+	]
+}
