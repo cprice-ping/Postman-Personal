@@ -25,7 +25,7 @@ Some calls contain hardcoded mapping of Definitions to Audience. If you want to 
 
 ## Collection - PingFed Admin API
 
-This set demonstrates the new APIs in PF 9.2+ that allow you do use the Admin API to fully build out a PingFed server that's connected to PingDirectory.
+This set demonstrates the new APIs in PF 9.2+ that allow you to use the Admin API to fully build out a PingFed server that's connected to PingDirectory.
 
 This set of calls:
 * Accepts EULA
