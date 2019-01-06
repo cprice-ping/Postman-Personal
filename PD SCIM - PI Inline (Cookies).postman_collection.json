@@ -1,0 +1,2191 @@
+{
+	"info": {
+		"_postman_id": "6c1970c2-4471-40b1-ae6d-ff637459ca94",
+		"name": "PD SCIM - PI Inline (Cookies)",
+		"description": "This collection is to demo using PI (Inline) to protect a generic PD SCIM endpoint\n\nThis set of calls is configured to generate a cookie as the stolen credential. Calls are using a Basic Authorization header to call PD SCIM\n\nThis configuration needs the following services:\n\nPingDirectory (Generic Docker image)\nPingIntelligence (Inline ASE)\n\nSample API Definition:\n\n{\n    \"api_metadata\": {\n        \"protocol\": \"https\",\n        \"url\": \"/scim-v1\",\n        \"cookie\": \"apicookie\",\n        \"hostname\": \"api.cpricedomain.net\",\n        \"oauth2_access_token\": false,\n        \"apikey_qs\": \"\",\n        \"apikey_header\": \"\",\n        \"enable_blocking\": true,\n        \"cookie_idle_timeout\": \"200m\",\n        \"logout_api_enabled\": false,\n        \"cookie_persistence_enabled\": false,\n        \"login_url\": \"\",\n        \"api_mapping\": {\n            \"internal_url\": \"/scim\"\n        },\n        \"api_pattern_enforcement\": {\n            \"protocol_allowed\": \"\",\n            \"http_redirect\": {\n                \"response_code\": \"\",\n                \"response_def\": \"\",\n                \"https_url\": \"\"\n            },\n            \"methods_allowed\": [\n                \"GET\",\n                \"PATCH\",\n                \"POST\"\n            ],\n            \"content_type_allowed\": \"\",\n            \"error_code\": \"401\",\n            \"error_def\": \"Unauthorized\",\n            \"error_message_body\": \"401 Unauthorized by PingIntelligence\"\n        },\n        \"flow_control\": {\n            \"client_spike_threshold\": \"50/second\",\n            \"server_connection_queueing\": true\n        },\n        \"api_memory_size\": \"128mb\",\n        \"health_check\": false,\n        \"health_check_interval\": 60,\n        \"health_retry_count\": 4,\n        \"health_url\": \"/health\",\n        \"server_ssl\": true,\n        \"servers\": [\n            {\n                \"host\": \"int-pd-generic.cpricedomain.ping-eng.com\",\n                \"port\": 8443,\n                \"server_connection_quota\": 0,\n                \"server_spike_threshold\": \"0/second\"\n            }\n        ],\n        \"decoy_config\": {\n            \"decoy_enabled\": true,\n            \"response_code\": 200,\n            \"response_def\": \"OK\",\n            \"response_message\": \"OK\",\n            \"decoy_subpaths\": [\n                \"/scim-v1/Me\",\n                \"/scim-v1/Users/Me\",\n                \"/scim-v1/Account\",\n                \"/scim-v1/Logon\"\n            ]\n        }\n    }\n}",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Training",
+			"item": [
+				{
+					"name": "Expected Calls (Users)",
+					"item": [
+						{
+							"name": "Create a User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "74365653-77e6-4c6f-b153-5f554f87ab13",
+										"exec": [
+											"pm.test(\"User Created\", function () {",
+											"    pm.response.to.have.status(201);",
+											"",
+											"    var response = pm.response.json();",
+											"",
+											"    // Store the UserID for other calls",
+											"    pm.environment.set(\"userId\", response.id);",
+											"    ",
+											"    console.log(response.id);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "3738827b-9dc2-4c74-9d8e-4b4866aad6e8",
+										"exec": [
+											"var addresses = [",
+											"    {",
+											"      \"streetAddress\": \"30650 Cherry Street\",",
+											"      \"formatted\": \"Jen Grimm\\n30650 Cherry Street\\nPensacola, WV  06057\",",
+											"      \"postalCode\": \"06057\",",
+											"      \"locality\": \"Pensacola\",",
+											"      \"region\": \"WV\",",
+											"      \"type\": \"work\"",
+											"    },",
+											"    {",
+											"      \"streetAddress\": \"90705 Chestnut Street\",",
+											"      \"formatted\": \"Erin Peterman\\n90705 Chestnut Street\\nSpokane, NC  59413\",",
+											"      \"postalCode\": \"59413\",",
+											"      \"locality\": \"Spokane\",",
+											"      \"region\": \"NC\",",
+											"      \"type\": \"work\"",
+											"    },",
+											"    {",
+											"      \"streetAddress\": \"90705 Chestnut Street\",",
+											"      \"formatted\": \"Erin Peterman\\n90705 Chestnut Street\\nSpokane, NC  59413\",",
+											"      \"postalCode\": \"59413\",",
+											"      \"locality\": \"Spokane\",",
+											"      \"region\": \"NC\",",
+											"      \"type\": \"work\"",
+											"    },",
+											"    {",
+											"      \"streetAddress\": \"71553 College Street\",",
+											"      \"formatted\": \"Xantippe Molyneux\\n71553 College Street\\nBeaumont, IL  86017\",",
+											"      \"postalCode\": \"86017\",",
+											"      \"locality\": \"Beaumont\",",
+											"      \"region\": \"IL\",",
+											"      \"type\": \"work\"",
+											"    },",
+											"    {",
+											"      \"streetAddress\": \"07875 Adams Street\",",
+											"      \"formatted\": \"Rickrd Desai\\n07875 Adams Street\\nRoanoke, SC  70440\",",
+											"      \"postalCode\": \"70440\",",
+											"      \"locality\": \"Roanoke\",",
+											"      \"region\": \"SC\",",
+											"      \"type\": \"work\"",
+											"    }",
+											"  ];",
+											"  ",
+											"pm.variables.set(\"userAddress\", JSON.stringify(addresses[_.random(0,4)]));",
+											"",
+											"// Random number for User Number",
+											"pm.variables.set(\"count\", _.random(1000,9999999));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "x-forwarded-for",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schemas\": [\n        \"urn:scim:schemas:core:1.0\",\n        \"urn:scim:schemas:extension:enterprise:1.0\"\n    ],\n    \"name\": {\n        \"formatted\": \"User Test {{count}}\",\n        \"givenName\": \"User\",\n        \"familyName\": \"Test {{count}}\"\n    },\n    \"addresses\": [\n        {{userAddress}}\n    ],\n    \"phoneNumbers\": [\n        {\n            \"value\": \"tel:+1-161-987-0914\",\n            \"type\": \"pager\"\n        },\n        {\n            \"value\": \"tel:+1-000-242-8134\",\n            \"type\": \"work\"\n        }\n    ],\n    \"userName\": \"user.{{count}}\",\n    \"emails\": [\n        {\n            \"value\": \"user.{{count}}@example.com\",\n            \"type\": \"work\"\n        }\n    ],\n    \"urn:scim:schemas:extension:enterprise:1.0\": {\n        \"employeeNumber\": \"{{count}}\"\n    }\n}"
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users/",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Users",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a4e464d3-1430-42b4-b519-55dfdf64d03c",
+										"exec": [
+											"pm.test(\"Users Retrieved\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User by UserId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2e030b14-568b-4180-aafd-8cabb958b42a",
+										"exec": [
+											"pm.test(\"User Retrieved\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "0082c3c5-cd58-4380-8537-56e42a41b172",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-forwarded-for",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users/{{userId}}",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users",
+										"{{userId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User with Attributes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d570a530-8e8b-4a71-953d-feba4cb05b37",
+										"exec": [
+											"pm.test(\"User Retrieved\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Forwarded-For",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Conten",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users/{{userId}}?attributes=name,addresses.formatted,emails",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users",
+										"{{userId}}"
+									],
+									"query": [
+										{
+											"key": "attributes",
+											"value": "name,addresses.formatted,emails"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Users with Filter (addresses.region)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d570a530-8e8b-4a71-953d-feba4cb05b37",
+										"exec": [
+											"pm.test(\"User Retrieved\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "92a352b7-1d80-4242-a60a-e603531c871e",
+										"exec": [
+											"var regionArray = [",
+											"    \"NC\", \"IL\", \"SC\", \"WV\"];",
+											"    ",
+											"pm.variables.set(\"region\", regionArray[_.random(0,3)]);",
+											"    ",
+											"    "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users?filter=addresses.region eq \"{{region}}\"",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users"
+									],
+									"query": [
+										{
+											"key": "filter",
+											"value": "addresses.region eq \"{{region}}\""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Users with Filter (name.familyName)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d570a530-8e8b-4a71-953d-feba4cb05b37",
+										"exec": [
+											"pm.test(\"User Retrieved\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "897ff7c9-9532-4b4f-b692-b7bf45e8fb9b",
+										"exec": [
+											"// Random number for Familiy Name",
+											"pm.variables.set(\"count\", _.random(1,999));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users?filter=name.familyName co \"{{count}}\"",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users"
+									],
+									"query": [
+										{
+											"key": "filter",
+											"value": "name.familyName co \"{{count}}\""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Users with Filter and Attributes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d570a530-8e8b-4a71-953d-feba4cb05b37",
+										"exec": [
+											"pm.test(\"User Retrieved\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users?filter=name.familyName co \"{{count}}\"&attributes=name.formatted,addresses.formatted",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users"
+									],
+									"query": [
+										{
+											"key": "filter",
+											"value": "name.familyName co \"{{count}}\""
+										},
+										{
+											"key": "attributes",
+											"value": "name.formatted,addresses.formatted"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Modify User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2ac28e21-1747-41f2-8103-19d79368045a",
+										"exec": [
+											"pm.test(\"User Modified\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d41f52f0-71b8-42c7-8841-4f9b4c0fe60a",
+										"exec": [
+											"pm.environment.set(\"count\", _.random(100000,999999));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "x-forwarded-for",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"schemas\": [\n    \"urn:scim:schemas:core:1.0\",\n    \"urn:scim:schemas:extension:enterprise:1.0\"\n  ],\n  \"emails\": [\n    {\n\t    \"value\": {\"value\": \"user.{{count}}@mailinator.com\",\"type\": \"home\"}\n    }\n    ]\n}"
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users/{{userId}}",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users",
+										"{{userId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "This set of calls are uses to demonstrate \"normal\" behavior.\n\nRun the collection with this folder during the training period, or to demonstrate regular calls working while an attack is underway",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bc6b88bf-dda8-436c-9d13-a3c982ff5234",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b715cd17-c44d-4be1-b02e-eeeb87ff5349",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Expected Calls (Groups)",
+					"item": [
+						{
+							"name": "General Calls",
+							"item": [
+								{
+									"name": "Create Group",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "a4e464d3-1430-42b4-b519-55dfdf64d03c",
+												"exec": [
+													"pm.test(\"Group Created\", function () {",
+													"    pm.response.to.have.status(201);",
+													"    ",
+													"    response = pm.response.json();",
+													"    ",
+													"    // Persist the groupId for later calls",
+													"    pm.environment.set(\"groupId\", response.id);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "ec8b0de6-0826-4041-9d80-4b22a51ec5ba",
+												"exec": [
+													"// Random number for Group Number",
+													"pm.variables.set(\"count\", _.random(1000,9999999));"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Cookie",
+												"type": "text",
+												"value": "apicookie={{apiCookie}}"
+											},
+											{
+												"key": "User-Agent",
+												"type": "text",
+												"value": "{{userAgent}}"
+											},
+											{
+												"key": "X-Forwarded-For",
+												"type": "text",
+												"value": "{{clientIP}}"
+											},
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n   \"schemas\":[\n      \"urn:scim:schemas:core:1.0\"\n   ],\n   \"displayName\":\"Normal Group {{count}}\",\n   \"members\":[\n\n   ]\n}"
+										},
+										"url": {
+											"raw": "https://{{server}}/{{apiURI}}/Groups",
+											"protocol": "https",
+											"host": [
+												"{{server}}"
+											],
+											"path": [
+												"{{apiURI}}",
+												"Groups"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Group by id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "a4e464d3-1430-42b4-b519-55dfdf64d03c",
+												"exec": [
+													"pm.test(\"Group Retrieved\", function () {",
+													"    pm.response.to.have.status(200);",
+													"    ",
+													"    response = pm.response.json();",
+													"    ",
+													"    // Persist the groupId for later calls",
+													"    pm.environment.set(\"groupId\", response.id);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "ec8b0de6-0826-4041-9d80-4b22a51ec5ba",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Cookie",
+												"type": "text",
+												"value": "apicookie={{apiCookie}}"
+											},
+											{
+												"key": "User-Agent",
+												"type": "text",
+												"value": "{{userAgent}}"
+											},
+											{
+												"key": "X-Forwarded-For",
+												"type": "text",
+												"value": "{{clientIP}}"
+											},
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "https://{{server}}/{{apiURI}}/Groups/{{groupId}}",
+											"protocol": "https",
+											"host": [
+												"{{server}}"
+											],
+											"path": [
+												"{{apiURI}}",
+												"Groups",
+												"{{groupId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get All Groups",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "a4e464d3-1430-42b4-b519-55dfdf64d03c",
+												"exec": [
+													"pm.test(\"Groups Retrieved\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Cookie",
+												"value": "apicookie={{apiCookie}}",
+												"type": "text"
+											},
+											{
+												"key": "User-Agent",
+												"value": "{{userAgent}}",
+												"type": "text"
+											},
+											{
+												"key": "X-Forwarded-For",
+												"value": "{{clientIP}}",
+												"type": "text"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "https://{{server}}/{{apiURI}}/Groups",
+											"protocol": "https",
+											"host": [
+												"{{server}}"
+											],
+											"path": [
+												"{{apiURI}}",
+												"Groups"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Add Member(s) to Group",
+							"item": [
+								{
+									"name": "Extract Users and pick random UserId",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "bba81651-10c1-4d78-8d3e-64f9af52404d",
+												"exec": [
+													"var response = pm.response.json();",
+													"",
+													"pm.test(\"Random User Retrieved\", function () {",
+													"    pm.response.to.have.status(200);",
+													"",
+													"    // Pick a random id and set in the environment",
+													"    pm.environment.set(\"userId\", response.Resources[0].id);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "84a23d46-bd6c-4188-80c1-08337b660c4c",
+												"exec": [
+													"// Randomize the startIndex",
+													"pm.variables.set(\"index\", _.random(1,pm.environment.get(\"totalUsers\")));"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "User-Agent",
+												"type": "text",
+												"value": "{{userAgent}}"
+											},
+											{
+												"key": "X-Forwarded-For",
+												"type": "text",
+												"value": "{{clientIP}}"
+											},
+											{
+												"key": "Cookie",
+												"type": "text",
+												"value": "apicookie={{apiCookie}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "https://{{server}}/{{apiURI}}/Users?startIndex={{index}}&count=1&attributes=id",
+											"protocol": "https",
+											"host": [
+												"{{server}}"
+											],
+											"path": [
+												"{{apiURI}}",
+												"Users"
+											],
+											"query": [
+												{
+													"key": "startIndex",
+													"value": "{{index}}"
+												},
+												{
+													"key": "count",
+													"value": "1"
+												},
+												{
+													"key": "attributes",
+													"value": "id"
+												}
+											]
+										},
+										"description": "This call is used to pull a list of UserIDs (SCIM returns 100) and pick one at random from the list.\n\nThe selected UserID is passed to the PATCH Group call to add them to the Group\n\nUser-Agent and Client-IP are faked in this call."
+									},
+									"response": []
+								},
+								{
+									"name": "Add Member(s) to Group",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "a4e464d3-1430-42b4-b519-55dfdf64d03c",
+												"exec": [
+													"pm.test(\"Group Modified\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "ec8b0de6-0826-4041-9d80-4b22a51ec5ba",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Cookie",
+												"type": "text",
+												"value": "apicookie={{apiCookie}}"
+											},
+											{
+												"key": "User-Agent",
+												"type": "text",
+												"value": "{{userAgent}}"
+											},
+											{
+												"key": "X-Forwarded-For",
+												"type": "text",
+												"value": "{{clientIP}}"
+											},
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n   \"schemas\":[\n      \"urn:scim:schemas:core:1.0\"\n   ],\n   \"members\":[\n   \t\t{\"value\": \"{{userId}}\"}\n\n   ]\n}"
+										},
+										"url": {
+											"raw": "https://{{server}}/{{apiURI}}/Groups/{{groupId}}",
+											"protocol": "https",
+											"host": [
+												"{{server}}"
+											],
+											"path": [
+												"{{apiURI}}",
+												"Groups",
+												"{{groupId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a594e586-6c4a-433d-b5a7-0f5387c5bdd7",
+						"type": "text/javascript",
+						"exec": [
+							"// Generate Random User-Agent for Request",
+							"var userAgentArray = [ ",
+							"    \"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.8) Gecko/20050513 Galeon/1.3.21\",",
+							"    \"Mozilla/5.0 (Windows; U; Windows NT 5.2; fr-FR; rv:1.7.8) Gecko/20050511 Firefox/1.0.4\",",
+							"    \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+							"    \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36\",",
+							"    \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+							"    \"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+							"    \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8\",",
+							"    \"Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:50.0) Gecko/20100101 Firefox/50.0\"",
+							"];",
+							"",
+							"var random = _.random(0, 7);",
+							"pm.variables.set(\"userAgent\", userAgentArray[random]);",
+							"",
+							"// Generate random IP Address - Request Header - X-Forwarded-For",
+							"pm.variables.set(\"clientIP\", _.random(1,254)+\".\"+_.random(1,254)+\".\"+_.random(1,254)+\".\"+_.random(1,254));",
+							"",
+							"// Generate New Cookie",
+							"var newCookie = \"\";",
+							"var charset = \"abcdefghijklmnopqrstuvwxyz0123456789\";",
+							"",
+							"for( var i=0; i < 12; i++ ) {",
+							"    newCookie += charset.charAt(Math.floor(Math.random() * charset.length));",
+							"}",
+							"",
+							"pm.environment.set(\"apiCookie\", newCookie);",
+							"",
+							"console.log(pm.variables.get(\"apiCookie\"));"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6eebec06-61e3-43bb-b3ac-5394251a8e9f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Attack",
+			"item": [
+				{
+					"name": "Unexpected Calls (General)",
+					"item": [
+						{
+							"name": "Excessive Create \\ Modify",
+							"item": [
+								{
+									"name": "Attack - Create a User - Bogus Data",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "74365653-77e6-4c6f-b153-5f554f87ab13",
+												"exec": [
+													"if(pm.response.code === 201) {",
+													"",
+													"    var response = pm.response.json();",
+													"    ",
+													"    // Store the UserID for other calls",
+													"    pm.environment.set(\"userId\", response.id);",
+													"}",
+													"",
+													"pm.test(\"Blocked by PingIntelligence\", function () {",
+													"    pm.response.to.have.status(401);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "3738827b-9dc2-4c74-9d8e-4b4866aad6e8",
+												"exec": [
+													"var addresses = [",
+													"    {",
+													"      \"streetAddress\": \"fgfghfgfgdhfghdgfjghjhgfjhjgkgjhkgjkhhdgnbvnvcvbdfghdbdvtvsevgfdbyew54yethfdgfdgbfhdnbgfhf\",",
+													"      \"formatted\": \"$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/\",",
+													"      \"postalCode\": \"%#$%#$V Edfjkgv nkesjhv lersvwty4\",",
+													"      \"locality\": \"d n dsfksdf;hglghweiruyp3948vy chfajkfhc;avksdk;cjknsnv 1!@#E@#$@@!V^@:^\",",
+													"      \"region\": \"dfgdf.j ghdfkljghsdfjh gksjfdhgfdjksh g;jsdfh;dfkjh gjkldfh gkdfjsh dfjkhg \",",
+													"      \"type\": \"459p867589468947t uiygljdfhgsldjfk hvmv,n.m,x n.xmcb\"",
+													"    },",
+													"    {",
+													"      \"streetAddress\": \"fljdkhg ldfhgdbv,dv34jkbho2y6278$%^%$^$%^%$ B^ $%^$\",",
+													"      \"formatted\": \"Erin Peterman\\n90705 Chestnut Street\\nSpokane, NC  59413\",",
+													"      \"postalCode\": \"59413\",",
+													"      \"locality\": \"Spokane\",",
+													"      \"region\": \"NC\",",
+													"      \"type\": \"work\"",
+													"    },",
+													"    {",
+													"      \"streetAddress\": \"90705 Chestnut Street\",",
+													"      \"formatted\": \"vcnvmncbmn,vcvbmnd,mbvdf jkgherljj nm,34546545645 &*&&\",",
+													"      \"postalCode\": \"59413\",",
+													"      \"locality\": \"Spokane\",",
+													"      \"region\": \"NC\",",
+													"      \"type\": \"work\"",
+													"    },",
+													"    {",
+													"      \"streetAddress\": \"$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/$#$%$#% DDFGDFGJIKJV JK%J#$#%#@$%#45353453453 vklvgk fvsgj hklh lvjr tlwjkh fjklsbf clndb vlkjds hvy523675tiuersgjkfd vjkdlljkdhvdfjks v;dsnndxmvjkdshfehgaoi ;dksvjioweuqiv3uc$$$$$FGDJsdklfgv dhghsdfhgsdlfg@@@dfjkgh dfkjhsfjdfgdf fgd//dffgd/fgsdfgdSGFDGdf/df/df//dfg/sdfg/rdsfg/dfsg/dfsg/\",",
+													"      \"formatted\": \"Xantippe Molyneux\\n71553 College Street\\nBeaumont, IL  86017\",",
+													"      \"postalCode\": \"fgfghhfghrthtrhgbngbn\",",
+													"      \"locality\": \"Beaumont\",",
+													"      \"region\": \"IL\",",
+													"      \"type\": \"work\"",
+													"    },",
+													"    {",
+													"      \"streetAddress\": \"07875 Adams Street\",",
+													"      \"formatted\": \"Rickrd Desai\\n07875 Adams Street\\nRoanoke, SC  70440\",",
+													"      \"postalCode\": \"70440\",",
+													"      \"locality\": \"%%^$$#$#%$#%#%#$%#$%#$%#$%#FGFDFFFFBVCB FFG FG DFGHBHGHDGFDFDFDHVBGFGFNGHJNSHDhfghdgfkjhgdhjfgkjvjdbjlkbfsljfhgdjklf hvldfjkvbkldvbljksdhglsjdhdfjkldlbvdv\",",
+													"      \"region\": \"SC\",",
+													"      \"type\": \"work\"",
+													"    }",
+													"  ];",
+													"  ",
+													"pm.variables.set(\"userAddress\", JSON.stringify(addresses[_.random(0,4)]));",
+													"pm.variables.set(\"bogusCount\", _.random(100000,999999));"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-forwarded-for",
+												"type": "text",
+												"value": "{{clientIP}}"
+											},
+											{
+												"key": "User-Agent",
+												"type": "text",
+												"value": "{{userAgent}}"
+											},
+											{
+												"key": "Cookie",
+												"value": "apicookie={{apiCookie}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schemas\": [\n        \"urn:scim:schemas:core:1.0\",\n        \"urn:scim:schemas:extension:enterprise:1.0\"\n    ],\n    \"name\": {\n        \"formatted\": \"Bogus User {{bogusCount}}\",\n        \"givenName\": \"Bogus\",\n        \"familyName\": \"User {{bogusCount}}\"\n    },\n    \"addresses\": [\n        {{userAddress}}\n    ],\n    \"phoneNumbers\": [\n        {\n            \"value\": \"tel:+1-161-987-0914\",\n            \"type\": \"pager\"\n        },\n        {\n            \"value\": \"tel:+1-000-242-8134\",\n            \"type\": \"work\"\n        }\n    ],\n    \"userName\": \"bogususer.{{bogusCount}}\",\n    \"emails\": [\n        {\n            \"value\": \"bogususer.{{bogusCount}}@example.com\",\n            \"type\": \"work\"\n        }\n    ],\n    \"urn:scim:schemas:extension:enterprise:1.0\": {\n        \"employeeNumber\": \"000{{bogusCount}}\"\n    }\n}"
+										},
+										"url": {
+											"raw": "https://{{server}}/{{apiURI}}/Users/",
+											"protocol": "https",
+											"host": [
+												"{{server}}"
+											],
+											"path": [
+												"{{apiURI}}",
+												"Users",
+												""
+											]
+										},
+										"description": "This call simulates sending bogus data into the \"addresses\" claim of a New User create.\n\nUser-Agent and Client-IP are faked in the call"
+									},
+									"response": []
+								},
+								{
+									"name": "Modify User Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ac28e21-1747-41f2-8103-19d79368045a",
+												"exec": [
+													"pm.test(\"User Modified\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "d41f52f0-71b8-42c7-8841-4f9b4c0fe60a",
+												"exec": [
+													"pm.variables.set(\"count\", _.random(100000,999999));"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "x-forwarded-for",
+												"type": "text",
+												"value": "{{clientIP}}"
+											},
+											{
+												"key": "User-Agent",
+												"type": "text",
+												"value": "{{userAgent}}"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "Cookie",
+												"type": "text",
+												"value": "apicookie={{apiCookie}}"
+											},
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"schemas\": [\n    \"urn:scim:schemas:core:1.0\",\n    \"urn:scim:schemas:extension:enterprise:1.0\"\n  ],\n  \"emails\": [\n    {\n\t    \"value\": {\"value\": \"user{{count}}@mailinator.com\",\"type\": \"home\"},\n\t    \"operation\": \"add\"\n    }\n    ]\n}"
+										},
+										"url": {
+											"raw": "https://{{server}}/{{apiURI}}/Users/{{userId}}",
+											"protocol": "https",
+											"host": [
+												"{{server}}"
+											],
+											"path": [
+												"{{apiURI}}",
+												"Users",
+												"{{userId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "8e83228e-82f3-42e0-8879-ac438830da03",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "3c81c4b8-ebc5-45a3-9fb1-03e3acdca903",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Attack - Get All Users - (Get Total User Count)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a4e464d3-1430-42b4-b519-55dfdf64d03c",
+										"exec": [
+											"var response = pm.response.json();",
+											"",
+											"// Store the Total User Count",
+											"pm.environment.set(\"totalUsers\", response.totalResults);",
+											"",
+											"// Grab and store a random userId",
+											"",
+											"// Use Lodash to extract the id in the response",
+											"var idArray = _.mapValues(response.Resources, 'id');",
+											"",
+											"pm.environment.set(\"userId\", idArray[_.random(0,9)]);",
+											"",
+											"pm.test(\"Blocked by PingIntelligence\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "28c14ea9-a026-42ab-a45e-d1b5e63b3919",
+										"exec": [
+											"// Set the startIndex to somewhere in the dataset",
+											"pm.variables.set(\"index\", _.random(1,pm.environment.get(\"totalUsers\")));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"type": "text",
+										"value": "{{userAgent}}"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"type": "text",
+										"value": "{{clientIP}}"
+									},
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "apicookie={{apiCookie}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users?count=1&attributes=id",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users"
+									],
+									"query": [
+										{
+											"key": "count",
+											"value": "1"
+										},
+										{
+											"key": "attributes",
+											"value": "id"
+										}
+									]
+								},
+								"description": "This is a basic GET call that captures the Total Number of Users available\n\nUser-Agent and ClientIP are faked in this call"
+							},
+							"response": []
+						},
+						{
+							"name": "Attack - Get All Users (Count = Total Users)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a4e464d3-1430-42b4-b519-55dfdf64d03c",
+										"exec": [
+											"pm.test(\"Blocked by PingIntelligence\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "28c14ea9-a026-42ab-a45e-d1b5e63b3919",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"type": "text",
+										"value": "{{userAgent}}"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"type": "text",
+										"value": "{{clientIP}}"
+									},
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "apicookie={{apiCookie}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users?count={{totalUsers}}",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users"
+									],
+									"query": [
+										{
+											"key": "count",
+											"value": "{{totalUsers}}"
+										}
+									]
+								},
+								"description": "This is a basic GET call that captures the Total Number of Users available\n\nUser-Agent and ClientIP are faked in this call"
+							},
+							"response": []
+						},
+						{
+							"name": "Attack - Data Exfiltration",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "b0d64122-ecd3-418b-a63f-4b1b606471ca",
+										"exec": [
+											"// Get current count",
+											"pm.environment.set(\"startIndex\", _.random(1,pm.environment.get(\"totalUsers\")));"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "0272bec1-94be-4d32-9216-8e05937fa957",
+										"exec": [
+											"pm.test(\"Blocked by PingIntelligence\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users?count={{retrieveCount}}&startIndex={{startIndex}}",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users"
+									],
+									"query": [
+										{
+											"key": "count",
+											"value": "{{retrieveCount}}"
+										},
+										{
+											"key": "startIndex",
+											"value": "{{startIndex}}"
+										}
+									]
+								},
+								"description": "This call is used to simulate crawling through the retrieved data by incrementing the count \\ startIndex on a User Retrieve request.\n\nUser-Agent and ClientIP are faked in the call"
+							},
+							"response": []
+						},
+						{
+							"name": "Attack - Bad Attribute Parameter filter",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "cb73fdb5-c5d1-4bca-a686-d5cbd5a31e9e",
+										"exec": [
+											"var parameterArray = [ ",
+											"    \"Users?user=\"+_.random(1,9999999),",
+											"    \"Users?userId=\"+_.random(1,9999999),",
+											"    \"Users?logon\",",
+											"    \"Users?Logon\",",
+											"    \"Users/Logon\",",
+											"    \"Users/logon\",",
+											"    \"Users/logon/{{userId}}\",",
+											"    \"Users?lastname=Smith\",",
+											"    \"Users?attribute=password,userid\",",
+											"    \"Users*\",",
+											"    \"Users/*\",",
+											"    \"Users/{{userId}}?attributes=emails[?(@.type=\\\"work\\\")]\",",
+											"    \"Users?filter=employeeNumber eq \"+_.random(1,9999999),",
+											"    \"Users?filter=djkslgdfjkghdfkjgkmdnm$$%#$%#$%#DFDVCVCXVXCFSR#$%dkvxcbxcmbxmdbksjdfkjfbgvnmb$%$%#%#%%5%%%$%$%%$%#ERE#%#%34324%%$%$%%%23423lkfdkvnknvdknvkjdvnkjdnvjvkcjv\"",
+											"];",
+											"",
+											"pm.variables.set(\"parameter\", parameterArray[_.random(0, 13)]);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "aed4418b-8906-4785-9620-bfbcfca9eeae",
+										"exec": [
+											"pm.test(\"Blocked by PingIntelligence\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/{{parameter}}",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"{{parameter}}"
+									]
+								},
+								"description": "This call adds a selection of different parameters into the API.\n\nUser-Agent and Client IP are faked in the call"
+							},
+							"response": []
+						},
+						{
+							"name": "Get User by UserId - Stuffed Cookie",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2e030b14-568b-4180-aafd-8cabb958b42a",
+										"exec": [
+											"pm.test(\"User Retrieved\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "0082c3c5-cd58-4380-8537-56e42a41b172",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-forwarded-for",
+										"type": "text",
+										"value": "{{clientIP}}"
+									},
+									{
+										"key": "User-Agent",
+										"type": "text",
+										"value": "{{userAgent}}"
+									},
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "apicookie={{apiCookie}}{{apiCookie}}{{apiCookie}}{{apiCookie}}{{apiCookie}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users/{{userId}}",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users",
+										"{{userId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "These calls are being sent in an attempt to do unexpected things through the API.\n\nA single cookie is used in each instance, to simulate a stolen token that is used for each of the calls in the attack",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a4345471-e9f7-45b0-a66a-a919c96492de",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b2f93c06-f245-4707-a479-1cd3aecf520c",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Unexpected Calls (Decoy URLs)",
+					"item": [
+						{
+							"name": "Attack - Decoy URLs",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "cb73fdb5-c5d1-4bca-a686-d5cbd5a31e9e",
+										"exec": [
+											"var parameterArray = [ ",
+											"    \"scim/Logon?id=\"+_.random(1,9999999),",
+											"    \"scim/Logon?user=\"+_.random(1,9999999)+\"&password=sdffsdfsd\",",
+											"    \"scim/Account?logon&user=\"+_.random(1,9999999),",
+											"    \"scim/Users/Me\",",
+											"    \"scim/Me\",",
+											"    \"logon/Logon?user=\"+_.random(1,9999999)+\"&password=sdffsdfsd\",",
+											"    \"Account/Logon?user=\"+_.random(1,9999999),",
+											"    \"Me\"",
+											"];",
+											"",
+											"pm.variables.set(\"parameter\", parameterArray[_.random(0, 7)]);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "aed4418b-8906-4785-9620-bfbcfca9eeae",
+										"exec": [
+											"pm.test(\"Blocked by PingIntelligence\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"type": "text",
+										"value": "{{userAgent}}"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"type": "text",
+										"value": "{{clientIP}}"
+									},
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "apicookie={{apiCookie}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{parameter}}",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{parameter}}"
+									]
+								},
+								"description": "This call adds a selection of different decoy URLS into the API.\n\nUser-Agent and Client IP are faked in the call"
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "70d7fe91-3dd5-4e17-b8c8-53dcb4d11ff3",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "0d57ae3e-fcb9-4c41-8323-86f6337f694c",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Unexpected Calls (Method - DELETE)",
+					"item": [
+						{
+							"name": "Attack - Extract Users and pick random UserID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "bba81651-10c1-4d78-8d3e-64f9af52404d",
+										"exec": [
+											"var response = pm.response.json();",
+											"",
+											"pm.test(\"Users Retrieved\", function () {",
+											"    pm.response.to.have.status(200);",
+											"",
+											"    // Use Lodash to extract the id in the response",
+											"    var idArray = _.mapValues(response.Resources, 'id');",
+											"        ",
+											"    // Pick a random id and set in the environment",
+											"    pm.environment.set(\"userId\", idArray[_.random(0,49)]);",
+											"    ",
+											"});",
+											"",
+											"pm.test(\"Blocked by PingIntelligence\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "0f6130f4-65f1-488d-a4b7-d29a7781c082",
+										"exec": [
+											"// Set the startIndex to somewhere in the dataset",
+											"pm.variables.set(\"index\", _.random(1,pm.environment.get(\"totalUsers\")));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users?count=50&startIndex={{index}}&attributes=id",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users"
+									],
+									"query": [
+										{
+											"key": "count",
+											"value": "50"
+										},
+										{
+											"key": "startIndex",
+											"value": "{{index}}"
+										},
+										{
+											"key": "attributes",
+											"value": "id"
+										}
+									]
+								},
+								"description": "This call is used to pull a list of UserIDs (SCIM returns 100) and pick one at random from the list.\n\nThe selected UserID is passed to the Delete User call.\n\nUser-Agent and Client-IP are faked in this call."
+							},
+							"response": []
+						},
+						{
+							"name": "Attack - Delete User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "028cee7e-7800-4db5-9246-aef12ab21159",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "9d9de8b2-067f-42f6-9458-112180acfadd",
+										"exec": [
+											"pm.test(\"Blocked by PingIntelligence\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "{{userAgent}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"value": "{{clientIP}}",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "apicookie={{apiCookie}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://{{server}}/{{apiURI}}/Users/{{userId}}",
+									"protocol": "https",
+									"host": [
+										"{{server}}"
+									],
+									"path": [
+										"{{apiURI}}",
+										"Users",
+										"{{userId}}"
+									]
+								},
+								"description": "This call performs the delete of the User. DELETE call are not part of the training, and may be stopped by a PA Rule before PI is asked.\n\nUser-Agent and ClientIP are faked on this call"
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4a2dacbf-6353-4419-b10b-9bc4de4657ef",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a7d5ef0f-15a9-43f3-bf0d-f567b3d89c78",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bc4a561c-e92d-4f0c-87e2-8f16509d3a9b",
+						"type": "text/javascript",
+						"exec": [
+							"// Generate Random User-Agent for Request",
+							"var userAgentArray = [ ",
+							"    \"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.8) Gecko/20050513 Galeon/1.3.21\",",
+							"    \"Mozilla/5.0 (Windows; U; Windows NT 5.2; fr-FR; rv:1.7.8) Gecko/20050511 Firefox/1.0.4\",",
+							"    \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+							"    \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36\",",
+							"    \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+							"    \"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\",",
+							"    \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/602.4.8 (KHTML, like Gecko) Version/10.0.3 Safari/602.4.8\",",
+							"    \"Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:50.0) Gecko/20100101 Firefox/50.0\"",
+							"];",
+							"",
+							"var random = _.random(0, 7);",
+							"pm.variables.set(\"userAgent\", userAgentArray[random]);",
+							"",
+							"// Generate random IP Address - Request Header - X-Forwarded-For",
+							"pm.variables.set(\"clientIP\", _.random(1,254)+\".\"+_.random(1,254)+\".\"+_.random(1,254)+\".\"+_.random(1,254));",
+							"",
+							"// Generate New Cookie",
+							"var newCookie = \"\";",
+							"var charset = \"abcdefghijklmnopqrstuvwxyz0123456789\";",
+							"",
+							"for( var i=0; i < 12; i++ ) {",
+							"    newCookie += charset.charAt(Math.floor(Math.random() * charset.length));",
+							"}",
+							"",
+							"// After the first Iteration, keep the same cookie values - simulating a Stolen Cookie",
+							"if (pm.info.iteration === 0) {",
+							"    pm.environment.set(\"apiCookie\", newCookie);",
+							"    pm.environment.set(\"startIndex\", 1);",
+							"}",
+							"",
+							"console.log(\"Cookie: \", pm.environment.get(\"apiCookie\"));"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "bde544fc-58c9-44a4-9514-4e7f6b83593d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "12Ch@racters",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "cn=dmanager",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "db516695-9b95-41f2-a7a3-3afcf4ab609d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "499c6ca1-7c04-4f47-b801-3beeb9202846",
+				"type": "text/javascript",
+				"exec": [
+					"// Log the Request that was made to the API",
+					"console.log(pm.request.headers);",
+					"console.log(\"----- Request Body -----\");",
+					"console.log((pm.request).body);"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "764b0e0b-59db-4f13-b736-45e1c462aadc",
+			"key": "serverName",
+			"value": "api.cpricedomain.net",
+			"type": "string"
+		},
+		{
+			"id": "5663a019-29bf-46c5-b7c7-22109053b214",
+			"key": "port",
+			"value": "8443",
+			"type": "string"
+		},
+		{
+			"id": "2cd945ce-c4d2-4e4c-b9de-104e999c15fd",
+			"key": "server",
+			"value": "{{serverName}}:{{port}}",
+			"type": "string"
+		},
+		{
+			"id": "1dbc9002-f28c-4725-9ecd-7554439cfb47",
+			"key": "retrieveCount",
+			"value": "100",
+			"type": "string"
+		},
+		{
+			"id": "f92f7cb0-ec5b-45d2-8b77-f3cf88dff6d1",
+			"key": "apiURI",
+			"value": "scim",
+			"type": "string"
+		}
+	]
+}
