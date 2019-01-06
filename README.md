@@ -3,7 +3,9 @@ Collections I'm working on - those of interest to the broader Ping Identity audi
 
 Those posted here are not all in a finished state - but could be used to start working with Ping Identity APIs.
 
-Many of these are being used to Train \ Attack the API endpoints protected by PingIntelligence - they are designed to be self-contained in Postman Collection Runner iterations. Collections used in this way will have a "Training" and "Attack" Folder in them.
+Several of these are being used to Train \ Attack the API endpoints protected by PingIntelligence - they are designed to be self-contained in Postman Collection Runner iterations. Collections used in this way will have a "Training" and "Attack" Folder in them.
+
+*Note:* These collections are using Dev-quality services - none of the data on them is real, nor should there be any expectation that the locations \ creds referenced in these collections will remain valid.
 
 ## Collection - Consent API
 
@@ -34,3 +36,18 @@ This set of calls:
 * Adds a LDAP Password Credential Validator
 * Adds a HTML Form Adapter with the PCV
 * Adds an AuthN Policy with Contract
+
+## Collection - PD SCIM - PI Inline (Cookies)
+
+This collection is built to Train and Attack a PingDirectory SCIM API when protected with PingIntelligence.
+
+The Training folder contains a set of calls that would be expected for a SCIM service - using a Cookie to represent the User Session for the call.
+
+The Attack folder sends calls that are unexpected or malicious. Simulating calls that:
+
+* Use a stolen cookie
+* Attempt to probe different parameters
+* Inject bad data into the object
+* Exfiltrate data
+
+This collection is designed to be placed into Postman Collection Runner (or Newman)
