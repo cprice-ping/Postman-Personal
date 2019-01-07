@@ -7,6 +7,8 @@ Several of these are being used to Train \ Attack the API endpoints protected by
 
 *Note:* These collections are using Dev-quality services - none of the data on them is real, nor should there be any expectation that the locations \ creds referenced in these collections will remain valid.
 
+Also - Postman requires that you have created an account with them in order for the Scripts to run. You do *not* need Postman Pro - the free version will work, but you do need to be Registered.
+
 ## Collection - Consent API
 
 This Collection is built to:
