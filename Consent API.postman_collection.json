@@ -13,7 +13,7 @@
 					"name": "Training",
 					"item": [
 						{
-							"name": "Unpriviledged User",
+							"name": "Unprivileged User",
 							"item": [
 								{
 									"name": "Get Random User (Directory API)",
@@ -214,7 +214,7 @@
 													"raw": ""
 												},
 												"url": {
-													"raw": "https://{{server}}/consent/v1/definitions",
+													"raw": "https://{{server}}/consent/v1/definitions/",
 													"protocol": "https",
 													"host": [
 														"{{server}}"
@@ -222,7 +222,8 @@
 													"path": [
 														"consent",
 														"v1",
-														"definitions"
+														"definitions",
+														""
 													]
 												}
 											},
@@ -344,7 +345,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"status\": \"{{consentStatus}}\",\n  \"subject\": \"{{userId}}\",\n  \"actor\": \"{{userId}}\",\n  \"audience\": \"{{consentAudience}}\",\n  \"definition\": {\n    \"id\": \"{{consentDefId}}\",\n    \"version\": \"{{consentVersion}}\",\n    \"locale\": \"{{consentLocale}}\"\n  },\n  \"dataText\": \"{{consentDataText}}\",\n  \"purposeText\": \"{{consentPurposeText}}\",\n  \"data\": {{consentData}},\n  \"consentContext\": {{consentContext}}\n}"
+													"raw": "{\n  \"status\": \"{{consentStatus}}\",\n  \"audience\": \"{{consentAudience}}\",\n  \"definition\": {\n    \"id\": \"{{consentDefId}}\",\n    \"version\": \"{{consentVersion}}\",\n    \"locale\": \"{{consentLocale}}\"\n  },\n  \"dataText\": \"{{consentDataText}}\",\n  \"purposeText\": \"{{consentPurposeText}}\",\n  \"data\": {{consentData}},\n  \"consentContext\": {{consentContext}}\n}"
 												},
 												"url": {
 													"raw": "https://{{server}}/consent/v1/consents",
@@ -558,12 +559,202 @@
 												}
 											],
 											"_postman_isSubFolder": true
+										},
+										{
+											"name": "Modify Consent Record",
+											"item": [
+												{
+													"name": "Get CONSENT Records (current User) and pick one",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"id": "5b375b1e-fe40-45d7-9fc8-0d77c0dd7bf1",
+																"exec": [
+																	"pm.test(\"Consent Records Retrieved\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"    ",
+																	"    var response = pm.response.json();",
+																	"    pm.environment.set(\"consentRecordId\", response._embedded.consents[_.random(0,Number(response.count)-1)].id);",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": ""
+														},
+														"url": {
+															"raw": "https://{{server}}/consent/v1/consents",
+															"protocol": "https",
+															"host": [
+																"{{server}}"
+															],
+															"path": [
+																"consent",
+																"v1",
+																"consents"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "Get CONSENT specfic record",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"id": "b6d8a267-95ee-4553-99f0-63c61663f558",
+																"exec": [
+																	"pm.test(\"Consent Record Retrieved\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"    ",
+																	"    var response = pm.response.json();",
+																	"    ",
+																	"    // Prep environment to Revoke the Consent if already Accepted",
+																	"    // otherwise Accept this record",
+																	"    if(response.status == \"accepted\"){",
+																	"        pm.environment.set(\"consentStatus\", \"revoked\");",
+																	"    } else {",
+																	"        pm.environment.set(\"consentStatus\", \"accepted\");",
+																	"    }",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": ""
+														},
+														"url": {
+															"raw": "https://{{server}}/consent/v1/consents/{{consentRecordId}}",
+															"protocol": "https",
+															"host": [
+																"{{server}}"
+															],
+															"path": [
+																"consent",
+																"v1",
+																"consents",
+																"{{consentRecordId}}"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "Modify CONSENT specific record",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"id": "b6d8a267-95ee-4553-99f0-63c61663f558",
+																"exec": [
+																	"pm.test(\"Consent Record Modified\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "prerequest",
+															"script": {
+																"id": "bc70ece8-d72a-4af2-ab65-dce7120255ca",
+																"exec": [
+																	""
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "PATCH",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															},
+															{
+																"key": "Content-Type",
+																"name": "Content-Type",
+																"value": "application/json",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"status\": \"{{consentStatus}}\"\n}"
+														},
+														"url": {
+															"raw": "https://{{server}}/consent/v1/consents/{{consentRecordId}}",
+															"protocol": "https",
+															"host": [
+																"{{server}}"
+															],
+															"path": [
+																"consent",
+																"v1",
+																"consents",
+																"{{consentRecordId}}"
+															]
+														},
+														"description": "Modifies the Status of a Consent Record"
+													},
+													"response": []
+												}
+											],
+											"description": "The Privileged Scope will allow any User that has it in the Bearer token to locate and modify the records of **any* other User.\n\nThe Actor value will be set to the *sub* of the Bearer Token",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"id": "2d8eda63-90b2-40b1-b703-f432cfca71cc",
+														"type": "text/javascript",
+														"exec": [
+															""
+														]
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"id": "4bea80bf-fb3e-4405-aed9-2d2018d93caf",
+														"type": "text/javascript",
+														"exec": [
+															""
+														]
+													}
+												}
+											],
+											"_postman_isSubFolder": true
 										}
 									],
 									"_postman_isSubFolder": true
 								}
 							],
-							"description": "These are the most common use cases - Unprivilidged Users have access to only their own Consent Records.\n\nThe ATV on the Consent API will match the incoming Bearer token to a User Object in the Directory. This User will be the one that owns the Records.\n\nUnprivilidged Access is denoted by the defined scope on the Consent API service. \n\nA Pre-Request script is used to create the proper Mock Bearer token.",
+							"description": "These are the most common use cases - Unprivileged Users have access to only their own Consent Records.\n\nThe ATV on the Consent API will match the incoming Bearer token to a User Object in the Directory. This User will be the one that owns the Records.\n\nUnprivileged Access is denoted by the defined scope on the Consent API service. \n\nA Pre-Request script is used to create the proper Mock Bearer token.",
 							"auth": {
 								"type": "bearer",
 								"bearer": [
@@ -633,7 +824,7 @@
 							"_postman_isSubFolder": true
 						},
 						{
-							"name": "Priviledged User (In Progress)",
+							"name": "Privileged User (In Progress)",
 							"item": [
 								{
 									"name": "Different Subject & Actor",
@@ -1061,7 +1252,7 @@
 																"consents"
 															]
 														},
-														"description": "Creates the Consent record for this User.\n\nThis call sets the Subject and the Actor to different things.\n\n**Actor** == the person who is granting the Consent\n**Subject** == is who the Consent is for\n\nIf you try this call with the Unpriviledged scope, the Actor difference is ignored, and is set to the Subject value"
+														"description": "Creates the Consent record for this User.\n\nThis call sets the Subject and the Actor to different things.\n\n**Actor** == the person who is granting the Consent\n**Subject** == is who the Consent is for\n\nIf you try this call with the Unprivileged scope, the Actor difference is ignored, and is set to the Subject value"
 													},
 													"response": []
 												}
@@ -1302,7 +1493,7 @@
 											"_postman_isSubFolder": true
 										}
 									],
-									"description": "One of the use cases for a Priviledged call is when the Subject and the Actor are not the same:\n\n* Power of Attorney acting on behalf of another person\n* Parent acting on behalf of a minor\n\nIn these cases, the Actor would be the one granting the Consent, and the Subject being whose Consent is being applied to.\n\nOnce the Consent Record is created, the Actor (or the Subject) can modify certain elements in the record with an Unprivileged request  ",
+									"description": "One of the use cases for a Privileged call is when the Subject and the Actor are not the same:\n\n* Power of Attorney acting on behalf of another person\n* Parent acting on behalf of a minor\n\nIn these cases, the Actor would be the one granting the Consent, and the Subject being whose Consent is being applied to.\n\nOnce the Consent Record is created, the Actor (or the Subject) can modify certain elements in the record with an Unprivileged request  ",
 									"_postman_isSubFolder": true
 								},
 								{
@@ -1523,199 +1714,9 @@
 										}
 									],
 									"_postman_isSubFolder": true
-								},
-								{
-									"name": "Modify Consent Record",
-									"item": [
-										{
-											"name": "Get CONSENT Records (current User) and pick one",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"id": "5b375b1e-fe40-45d7-9fc8-0d77c0dd7bf1",
-														"exec": [
-															"pm.test(\"Consent Records Retrieved\", function () {",
-															"    pm.response.to.have.status(200);",
-															"    ",
-															"    var response = pm.response.json();",
-															"    pm.environment.set(\"consentRecordId\", response._embedded.consents[_.random(0,Number(response.count)-1)].id);",
-															"});"
-														],
-														"type": "text/javascript"
-													}
-												}
-											],
-											"request": {
-												"method": "GET",
-												"header": [
-													{
-														"key": "Accept",
-														"value": "application/json"
-													}
-												],
-												"body": {
-													"mode": "raw",
-													"raw": ""
-												},
-												"url": {
-													"raw": "https://{{server}}/consent/v1/consents",
-													"protocol": "https",
-													"host": [
-														"{{server}}"
-													],
-													"path": [
-														"consent",
-														"v1",
-														"consents"
-													]
-												}
-											},
-											"response": []
-										},
-										{
-											"name": "Get CONSENT specfic record",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"id": "b6d8a267-95ee-4553-99f0-63c61663f558",
-														"exec": [
-															"pm.test(\"Consent Record Retrieved\", function () {",
-															"    pm.response.to.have.status(200);",
-															"    ",
-															"    var response = pm.response.json();",
-															"    ",
-															"    // Prep environment to Revoke the Consent if already Accepted",
-															"    // otherwise Accept this record",
-															"    if(response.status == \"accepted\"){",
-															"        pm.environment.set(\"consentStatus\", \"revoked\");",
-															"    } else {",
-															"        pm.environment.set(\"consentStatus\", \"accepted\");",
-															"    }",
-															"});"
-														],
-														"type": "text/javascript"
-													}
-												}
-											],
-											"request": {
-												"method": "GET",
-												"header": [
-													{
-														"key": "Accept",
-														"value": "application/json"
-													}
-												],
-												"body": {
-													"mode": "raw",
-													"raw": ""
-												},
-												"url": {
-													"raw": "https://{{server}}/consent/v1/consents/{{consentRecordId}}",
-													"protocol": "https",
-													"host": [
-														"{{server}}"
-													],
-													"path": [
-														"consent",
-														"v1",
-														"consents",
-														"{{consentRecordId}}"
-													]
-												}
-											},
-											"response": []
-										},
-										{
-											"name": "Modify CONSENT specific record",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"id": "b6d8a267-95ee-4553-99f0-63c61663f558",
-														"exec": [
-															"pm.test(\"Consent Record Modified\", function () {",
-															"    pm.response.to.have.status(200);",
-															"});"
-														],
-														"type": "text/javascript"
-													}
-												},
-												{
-													"listen": "prerequest",
-													"script": {
-														"id": "bc70ece8-d72a-4af2-ab65-dce7120255ca",
-														"exec": [
-															""
-														],
-														"type": "text/javascript"
-													}
-												}
-											],
-											"request": {
-												"method": "PATCH",
-												"header": [
-													{
-														"key": "Accept",
-														"value": "application/json"
-													},
-													{
-														"key": "Content-Type",
-														"name": "Content-Type",
-														"value": "application/json",
-														"type": "text"
-													}
-												],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n  \"status\": \"{{consentStatus}}\"\n}"
-												},
-												"url": {
-													"raw": "https://{{server}}/consent/v1/consents/{{consentRecordId}}",
-													"protocol": "https",
-													"host": [
-														"{{server}}"
-													],
-													"path": [
-														"consent",
-														"v1",
-														"consents",
-														"{{consentRecordId}}"
-													]
-												},
-												"description": "Modifies the Status of a Consent Record"
-											},
-											"response": []
-										}
-									],
-									"description": "The Privileged Scope will allow any User that has it in the Bearer token to locate and modify the records of **any* other User.\n\nThe Actor value will be set to the *sub* of the Bearer Token",
-									"event": [
-										{
-											"listen": "prerequest",
-											"script": {
-												"id": "2d8eda63-90b2-40b1-b703-f432cfca71cc",
-												"type": "text/javascript",
-												"exec": [
-													""
-												]
-											}
-										},
-										{
-											"listen": "test",
-											"script": {
-												"id": "4bea80bf-fb3e-4405-aed9-2d2018d93caf",
-												"type": "text/javascript",
-												"exec": [
-													""
-												]
-											}
-										}
-									],
-									"_postman_isSubFolder": true
 								}
 							],
-							"description": "These are less common use cases - Priviledged Users have access to any Consent Records.\n\nPriviledged Access is denoted by the defined scope on the Consent API service. \n\nA Pre-Request script is used to create the proper Mock Bearer token.\n\nThe API requires that a \"sub\" claim is included, and that it maps to a User Object. For these calls, a random User has been selected and hardcoded into the Bearer token",
+							"description": "These are less common use cases - Privileged Users have access to any Consent Records.\n\nPrivileged Access is denoted by the defined scope on the Consent API service. \n\nA Pre-Request script is used to create the proper Mock Bearer token.\n\nThe API requires that a \"sub\" claim is included, and that it maps to a User Object. For these calls, a random User has been selected and hardcoded into the Bearer token",
 							"auth": {
 								"type": "bearer",
 								"bearer": [
@@ -1788,7 +1789,7 @@
 					"_postman_isSubFolder": true
 				}
 			],
-			"description": "Calls in this folder use a Bearer token that is validated against the Mock ATV in the Consent API. This relieves the need for a full OAuth AS request first. The Mock ATV is configured to accept entryUUID (on the Exact Match object) in the \"sub\" claim and maps that to the proper userDN in the Directory.\n\nA pre-request script on the *Training --> [Unpriviledged | Priviledged] User* folder is used to generate the Mock Tokens (due to a Scope requirement for each User type). Each token will be unique for every Iteration - this is to prevent PingIntelligence from determining this is a stolen token.\n",
+			"description": "Calls in this folder use a Bearer token that is validated against the Mock ATV in the Consent API. This relieves the need for a full OAuth AS request first. The Mock ATV is configured to accept entryUUID (on the Exact Match object) in the \"sub\" claim and maps that to the proper userDN in the Directory.\n\nA pre-request script on the *Training --> [Unprivileged | Privileged] User* folder is used to generate the Mock Tokens (due to a Scope requirement for each User type). Each token will be unique for every Iteration - this is to prevent PingIntelligence from determining this is a stolen token.\n",
 			"auth": {
 				"type": "noauth"
 			},
@@ -1840,13 +1841,13 @@
 	],
 	"variable": [
 		{
-			"id": "fc4b328e-35a5-4f2c-bca8-c5e69ca5b3fa",
+			"id": "ba776474-cc5e-4425-9d38-59c997f642bb",
 			"key": "server",
 			"value": "int-pd-generic.cpricedomain.ping-eng.com:8443",
 			"type": "string"
 		},
 		{
-			"id": "e357a66d-e0af-4ae2-b08e-07c348c00b94",
+			"id": "cb9d19e5-66a4-40a7-8360-02331a23550d",
 			"key": "appDefArray",
 			"value": "[ \n    {\"def\": \"App1-TermsAndConditions\", \"aud\": \"Postman-Demo\", \"data\": {}, \"context\": {} },\n    {\"def\": \"FHIR-read-Patient\", \"aud\": \"DG-FHIR-Demo\", \"data\": {\"permissions\": [ \"readProfile\", \"readEncounters\"]}, \"context\": {} },\n    {\"def\": \"PingAccess-Portal-Terms\", \"aud\": \"PA Demo\", \"data\": {}, \"context\": {\"entitlements\": \"logonToPortal\"} }\n]",
 			"type": "string"
