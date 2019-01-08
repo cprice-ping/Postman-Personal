@@ -2,6 +2,7 @@
 	"info": {
 		"_postman_id": "7bfa3617-8995-48d6-a695-0ef2fb0096d6",
 		"name": "PingFed Admin API",
+		"description": "## Collection - PingFed Admin API\n\nThis set demonstrates the new APIs in PF 9.2+ that allow you do use the Admin API to fully build out a PingFed server that's connected to PingDirectory.\n\nThis set of calls:\n* Accepts EULA\n* Imports a PingFed license (stored in the Environment)\n* Adds the intitial Admin user\n* Enables the Server Roles\n* Adds PingDirectory as a Data Store\n* Adds a LDAP Password Credential Validator\n* Adds a HTML Form Adapter with the PCV\n* Adds an AuthN Policy with Contract",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -141,57 +142,6 @@
 					"response": []
 				},
 				{
-					"name": "Server Settings",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "37cd23c7-5a5a-4834-bc81-9210b59a4074",
-								"exec": [
-									"pm.test(\"Server Settings Configured\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "X-XSRF-Header",
-								"value": "PingFederate",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"contactInfo\": {\n    \"company\": \"PF Demo\"\n  },\n  \"rolesAndProtocols\": {\n    \"oauthRole\": {\n      \"enableOauth\": true,\n      \"enableOpenIdConnect\": true\n    },\n    \"idpRole\": {\n      \"enable\": true,\n      \"saml20Profile\": {\n        \"enable\": true,\n        \"enableAutoConnect\": false\n      },\n      \"enableOutboundProvisioning\": false,\n      \"enableSaml11\": false,\n      \"enableSaml10\": false,\n      \"enableWsFed\": true,\n      \"enableWsTrust\": true\n    },\n    \"spRole\": {\n      \"enable\": true,\n      \"saml20Profile\": {\n        \"enable\": true,\n        \"enableXASP\": false,\n        \"enableAutoConnect\": false\n      },\n      \"enableSaml11\": false,\n      \"enableSaml10\": false,\n      \"enableWsFed\": false,\n      \"enableWsTrust\": false,\n      \"enableOpenIDConnect\": true,\n      \"enableInboundProvisioning\": false\n    },\n    \"enableIdpDiscovery\": false\n  },\n  \"federationInfo\": {\n    \"baseUrl\": \"https://{{pingfed}}:{{runtime}}\",\n    \"saml2EntityId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"autoConnectEntityId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"saml1xIssuerId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"saml1xSourceId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"wsfedRealm\": \"https://{{pingfed}}:{{runtime}}\"\n  }\n}"
-						},
-						"url": {
-							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/serverSettings",
-							"protocol": "https",
-							"host": [
-								"{{pingfed}}"
-							],
-							"port": "{{admin}}",
-							"path": [
-								"pf-admin-api",
-								"v1",
-								"serverSettings"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Add Initial Admin Account",
 					"event": [
 						{
@@ -237,6 +187,57 @@
 								"pf-admin-api",
 								"v1",
 								"administrativeAccounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Server Settings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "37cd23c7-5a5a-4834-bc81-9210b59a4074",
+								"exec": [
+									"pm.test(\"Server Settings Configured\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-XSRF-Header",
+								"value": "PingFederate",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"contactInfo\": {\n    \"company\": \"PF Demo\"\n  },\n  \"rolesAndProtocols\": {\n    \"oauthRole\": {\n      \"enableOauth\": true,\n      \"enableOpenIdConnect\": true\n    },\n    \"idpRole\": {\n      \"enable\": true,\n      \"saml20Profile\": {\n        \"enable\": true,\n        \"enableAutoConnect\": false\n      },\n      \"enableOutboundProvisioning\": false,\n      \"enableSaml11\": false,\n      \"enableSaml10\": false,\n      \"enableWsFed\": true,\n      \"enableWsTrust\": true\n    },\n    \"spRole\": {\n      \"enable\": true,\n      \"saml20Profile\": {\n        \"enable\": true,\n        \"enableXASP\": false,\n        \"enableAutoConnect\": false\n      },\n      \"enableSaml11\": false,\n      \"enableSaml10\": false,\n      \"enableWsFed\": false,\n      \"enableWsTrust\": false,\n      \"enableOpenIDConnect\": true,\n      \"enableInboundProvisioning\": false\n    },\n    \"enableIdpDiscovery\": false\n  },\n  \"federationInfo\": {\n    \"baseUrl\": \"https://{{pingfed}}:{{runtime}}\",\n    \"saml2EntityId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"autoConnectEntityId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"saml1xIssuerId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"saml1xSourceId\": \"https://{{pingfed}}:{{runtime}}\",\n    \"wsfedRealm\": \"https://{{pingfed}}:{{runtime}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{pingfed}}:{{admin}}/pf-admin-api/v1/serverSettings",
+							"protocol": "https",
+							"host": [
+								"{{pingfed}}"
+							],
+							"port": "{{admin}}",
+							"path": [
+								"pf-admin-api",
+								"v1",
+								"serverSettings"
 							]
 						}
 					},
